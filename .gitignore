@@ -1,0 +1,9 @@
+/.cpcache
+/.nrepl-port
+/classes
+/.idea
+/cljfx.iml
+*.swp
+.calva
+.lsp
+.clj-kondo/.cache

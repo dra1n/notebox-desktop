@@ -1,0 +1,5 @@
+{:deps {org.clojure/clojure {:mvn/version "1.10.0"}
+        cljfx/cljfx {:mvn/version "1.7.18"}
+        com.jsyn/jsyn {:mvn/version "20170815"}}
+ :aliases {:project/run
+           {:main-opts ["-m" "notebox.core"]}}}
