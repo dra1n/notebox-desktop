@@ -3,6 +3,7 @@
 /classes
 /.idea
 /cljfx.iml
+/dist
 *.swp
 .calva
 .lsp
