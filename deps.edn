@@ -1,6 +1,22 @@
-{:deps {org.clojure/clojure {:mvn/version "1.10.0"}
+{:deps {org.clojure/clojure {:mvn/version "1.10.3"}
+        cheshire/cheshire {:mvn/version "5.10.2"}
+        nano-id/nano-id {:mvn/version "1.0.0"}
+        com.dropbox.core/dropbox-core-sdk {:mvn/version "5.1.1"}
         cljfx/cljfx {:mvn/version "1.7.18"}
         com.jsyn/jsyn {:mvn/version "20170815"}}
  :aliases {:project/run {:main-opts ["-m" "notebox.core"]}
            :uberjar {:extra-deps {seancorfield/depstar {:mvn/version "0.5.2"}}
-                     :main-opts ["-m" "hf.depstar.uberjar" "dist/notebox.jar"]}}}
+                     :main-opts ["-m" "hf.depstar.uberjar" "dist/notebox.jar"]}
+           ;; Simple nREPL server with no additional libraries, headless
+           :repl/nrepl
+           {:extra-deps {nrepl/nrepl                {:mvn/version "0.9.0"}}
+            :main-opts  ["-m" "nrepl.cmdline"]}
+
+           ;; Run an interactive Clojure REPL with nREPL connection and CIDER libraries
+           ;; clojure -M:repl/nrepl
+           :repl/cider
+           {:extra-deps {nrepl/nrepl                {:mvn/version "0.9.0"}
+                         cider/cider-nrepl          {:mvn/version "0.27.4"}}
+            :main-opts  ["-m" "nrepl.cmdline"
+                         "--middleware" "[cider.nrepl/cider-middleware]"
+                         "-i"]}}}
