@@ -1,14 +1,11 @@
 (ns notebox.core
   (:gen-class)
   (:require [cljfx.api :as fx]
-            [notebox.notes.db :refer [*state event-handler]])
+            [notebox.app-db.db :refer [*state event-handler]]
+            [notebox.screens.all-notes.views :refer [all-notes]])
   (:import [javafx.application Platform]))
 
-(defn hello-world [& args]
-  {:fx/type :label
-   :text "Hello, World!"})
-
-(defn root [& args]
+(defn root [& _args]
   {:fx/type :stage
    :showing true
    :width 1024
@@ -17,19 +14,7 @@
    :min-height 600
    :title "Notebox"
    :scene {:fx/type :scene
-           :root {:fx/type :h-box
-                  :children [{:fx/type :v-box
-                              :style {:-fx-background-color "#2c292b"}
-                              :pref-width 300
-                              :children [{:fx/type hello-world}]}
-                             {:fx/type :v-box
-                              :style {:-fx-background-color "#f6f6f6"}
-                              :pref-width 300
-                              :children [{:fx/type hello-world}]}
-                             {:fx/type :v-box
-                              :style {:-fx-background-color "#fff"}
-                              :h-box/hgrow :always
-                              :children [{:fx/type hello-world}]}]}}})
+           :root {:fx/type all-notes}}})
 
 (def renderer
   (fx/create-renderer
@@ -40,7 +25,7 @@
 
 (fx/mount-renderer *state renderer)
 
-(defn -main [& args]
+(defn -main [& _args]
   (Platform/setImplicitExit true)
   (renderer {:fx/type root}))
 

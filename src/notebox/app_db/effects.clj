@@ -1,12 +1,13 @@
-(ns notebox.notes.effects
+(ns notebox.app-db.effects
   (:require [cheshire.core :as json]
-            [notebox.notes.db :refer [*state]]
+            [notebox.app-db.db :refer [*state]]
             [luggage.collections :as luggage]))
 
 (def access-token "sl.BDWMcP8l08_1kuAzmAq0Zsf_XoIgnbFkjVOau1kxBnuucDygfoMcWnSgUxSla12h1ViL_w_x3YAv-L-MnP8P7ZHqKs0JTz6Crl_-gBv8ZhGk_BgtspQAep5HfZeHbU4HNYQlW2-RmT1p")
 (def collections-name "notes")
 
-;; Utils
+
+;; Notes Utils
 
 (defn expired-access-token? [error]
   (= (get-in error ["error" ".tag"]) "expired_access_token"))
@@ -24,7 +25,7 @@
       (dissoc :book-slug)))
 
 
-;; Effects
+;; Notes Effects
 
 (defn state-effect [value _]
   (reset! *state value))
