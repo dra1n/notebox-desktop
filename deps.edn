@@ -1,4 +1,5 @@
 {:deps {org.clojure/clojure {:mvn/version "1.10.3"}
+        org.clojure/core.cache {:mvn/version "1.0.225"}
         cheshire/cheshire {:mvn/version "5.10.2"}
         nano-id/nano-id {:mvn/version "1.0.0"}
         com.dropbox.core/dropbox-core-sdk {:mvn/version "5.1.1"}
