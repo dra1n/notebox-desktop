@@ -27,17 +27,19 @@
 ;; Notes Effects
 
 (defn fetch-notes-info
-  [{:keys [token callback error-callback]}]
+  [{:keys [token dispatch-success dispatch-error]} dispatch]
   (try
     (-> {:access-token token
          :collections-name collections-name}
         (luggage/read-meta)
         (:notesInfo)
-        (callback))
+        ((fn [data] (dispatch {:event/type dispatch-success
+                               :data data}))))
     (catch Exception e
       (let [error (-> e (.getMessage) (json/parse-string))]
         (cond (access-token-error? error)
-              (error-callback error))))))
+              (dispatch {:event/type dispatch-error
+                         :error error}))))))
 
 (defn fetch-tags-info
   [{:keys [token callback error-callback]}]
@@ -111,10 +113,6 @@
 ;;                        (error-callback error)))))))
 
 ;; Repl stuff
-
-(comment (fetch-notes-info {:token access-token
-                            :error-callback println
-                            :callback println}))
 
 (comment (fetch-tags-info {:token access-token
                            :error-callback println

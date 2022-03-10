@@ -14,14 +14,18 @@
    :min-height 600
    :title "Notebox"
    :scene {:fx/type :scene
+           :stylesheets #{"styles.css"}
            :root {:fx/type all-notes}}})
 
 (def renderer
   (fx/create-renderer
-   :middleware (fx/wrap-map-desc (fn [state]
-                                   {:fx/type root
-                                    :state state}))
-   :opts {:fx.opt/map-event-handler event-handler}))
+   :middleware (comp
+                fx/wrap-context-desc
+                (fx/wrap-map-desc (fn [_] {:fx/type root})))
+   :opts {:fx.opt/type->lifecycle #(or (fx/keyword->lifecycle %)
+                                       (fx/fn->lifecycle-with-context %))
+          :fx.opt/map-event-handler event-handler}))
+
 
 (fx/mount-renderer *state renderer)
 
