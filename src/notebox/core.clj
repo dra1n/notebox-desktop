@@ -1,7 +1,8 @@
 (ns notebox.core
   (:gen-class)
   (:require [cljfx.api :as fx]
-            [notebox.app-db.db :refer [*state event-handler]]
+            [notebox.app-db.db :refer [*state]]
+            [notebox.app-db.events :refer [dispatch-event]]
             [notebox.screens.all-notes.views :refer [all-notes]])
   (:import [javafx.application Platform]))
 
@@ -24,13 +25,10 @@
                 (fx/wrap-map-desc (fn [_] {:fx/type root})))
    :opts {:fx.opt/type->lifecycle #(or (fx/keyword->lifecycle %)
                                        (fx/fn->lifecycle-with-context %))
-          :fx.opt/map-event-handler event-handler}))
-
-
-(fx/mount-renderer *state renderer)
+          :fx.opt/map-event-handler dispatch-event}))
 
 (defn -main [& _args]
   (Platform/setImplicitExit true)
-  (renderer {:fx/type root}))
+  (fx/mount-renderer *state renderer))
 
-(comment (renderer {:fx/type root}))
+(comment (fx/mount-renderer *state renderer))

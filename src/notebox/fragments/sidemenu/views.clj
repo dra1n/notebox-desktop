@@ -7,6 +7,4 @@
                :text "side menu"}
               {:fx/type :button
                :text "refresh"
-               :on-action (fn [_]
-                            (events/dispatch-event
-                             {:event/type ::events/fetch-notes-info}))}]})
+               :on-action {:event/type ::events/fetch-notes-info}}]})
