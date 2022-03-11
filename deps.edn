@@ -5,6 +5,7 @@
         nano-id/nano-id {:mvn/version "1.0.0"}
         com.dropbox.core/dropbox-core-sdk {:mvn/version "5.1.1"}
         cljfx/cljfx {:mvn/version "1.7.18"}
+        cljfx/css {:mvn/version "1.1.0"}
         com.jsyn/jsyn {:mvn/version "20170815"}}
  :aliases {:project/run {:main-opts ["-m" "notebox.core"]}
            :uberjar {:extra-deps {seancorfield/depstar {:mvn/version "0.5.2"}}

@@ -10,7 +10,7 @@
     {:fx/type :v-box
      :children [{:fx/type :v-box
                  :children [{:fx/type :label
-                             :style-class ["notes-count"]
+                             :style-class "notes-count"
                              :text (str
                                     (inf/pluralize books-count "book") ", "
                                     (inf/pluralize notes-count "note"))}

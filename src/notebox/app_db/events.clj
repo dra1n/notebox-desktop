@@ -24,11 +24,11 @@
                       :dispatch-error ::set-error}})
 
 
-;; Screen events
+;; Scene events
 
-(defmethod event-handler ::set-screen [event]
+(defmethod event-handler ::set-scene [event]
   (let [{:keys [data context]} event]
-    {:context (fx/sub-ctx context queries/assoc-screen data)}))
+    {:context (fx/sub-ctx context queries/assoc-scene data)}))
 
 
 ;; Main dispatch function

@@ -22,12 +22,12 @@
   (fx/swap-context context assoc-in [notes-db-key :notes-info] value))
 
 
-;; Screens
+;; Scences
 
-(def screen-db-key :notebox.screen)
+(def scene-db-key :notebox.scene)
 
-(defn screen [context]
-  (fx/sub-val context get-in [screen-db-key :current]))
+(defn scene [context]
+  (fx/sub-val context get-in [scene-db-key :current]))
 
-(defn assoc-screen [context value]
-  (fx/swap-context context assoc-in [screen-db-key :current] value))
+(defn assoc-scene [context value]
+  (fx/swap-context context assoc-in [scene-db-key :current] value))

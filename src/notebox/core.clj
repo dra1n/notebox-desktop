@@ -2,11 +2,12 @@
   (:gen-class)
   (:require [cljfx.api :as fx]
             [notebox.app-db.db :refer [*state]]
-            [notebox.app-db.events :refer [dispatch-event]]
-            [notebox.screens.all-notes.views :refer [all-notes]])
+            [notebox.app-db.events :as events :refer [dispatch-event]]
+            [notebox.app-db.queries :as queries]
+            [notebox.scenes.core :as scenes])
   (:import [javafx.application Platform]))
 
-(defn root [& _args]
+(defn root [{:keys [fx/context]}]
   {:fx/type :stage
    :showing true
    :width 1024
@@ -14,9 +15,7 @@
    :min-width 1024
    :min-height 600
    :title "Notebox"
-   :scene {:fx/type :scene
-           :stylesheets #{"styles.css"}
-           :root {:fx/type all-notes}}})
+   :scene {:fx/type (get scenes/scenes (fx/sub-ctx context queries/scene))}})
 
 (def renderer
   (fx/create-renderer
@@ -29,6 +28,7 @@
 
 (defn -main [& _args]
   (Platform/setImplicitExit true)
+  (dispatch-event {:event/type ::events/set-scene :data ::scenes/all-notes})
   (fx/mount-renderer *state renderer))
 
 (comment (fx/mount-renderer *state renderer))
