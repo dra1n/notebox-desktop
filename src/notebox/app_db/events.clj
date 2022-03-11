@@ -4,7 +4,7 @@
             [notebox.app-db.queries :as queries]
             [notebox.app-db.effects :as effects]))
 
-(def access-token "sl.BDlChMH2WEfNuHUt3LG4hGSlE13T0rEjlV9MIHkBicA0_YZk1baQodBSDzFXmowS3N_IlRw25GoC4UEOjMbTOQdjggqms94jJ3DEqHl14KJmNBTUJ6HvnZ8hF6_-4FBGfxPb0HcdT58Z")
+(def access-token "sl.BDmd9LOeE_ZbV0nqDyqOOI08_ebkdPsw9D75PibcjYtyNOd22t28cZqle4u14TA_YN-pjMR1AdOZ7MtN7gsdS2VlcqdjqzGMvY0t6syOsxeQnNboysda1GYCwDXUs6ZkcJh0v4JJ18JX")
 
 
 ;; Notes events
@@ -43,6 +43,6 @@
 
 ;; Playground
 
-(comment (dispatch-event {:event/type ::set-notes-info :data "hey"}))
+(comment (dispatch-event {:event/type ::set-notes-info :data nil}))
 (comment (dispatch-event {:event/type ::set-screen :data :all_notes}))
 (comment @*state)

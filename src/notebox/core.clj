@@ -31,4 +31,8 @@
   (dispatch-event {:event/type ::events/set-scene :data ::scenes/all-notes})
   (fx/mount-renderer *state renderer))
 
+
+;; Playground
+
+(comment (dispatch-event {:event/type ::events/set-scene :data ::scenes/all-notes}))
 (comment (fx/mount-renderer *state renderer))
