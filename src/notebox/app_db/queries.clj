@@ -31,3 +31,14 @@
 
 (defn assoc-scene [context value]
   (fx/swap-context context assoc-in [scene-db-key :current] value))
+
+
+;; Styles
+
+(def styles-db-key :notebox.styles)
+
+(defn styles [context]
+  (fx/sub-val context styles-db-key))
+
+(defn assoc-styles [context value]
+  (fx/swap-context context assoc styles-db-key value))

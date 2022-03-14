@@ -29,10 +29,22 @@
 (defn -main [& _args]
   (Platform/setImplicitExit true)
   (dispatch-event {:event/type ::events/set-scene :data ::scenes/all-notes})
+  (dispatch-event {:event/type ::events/set-styles :data scenes/styles})
   (fx/mount-renderer *state renderer))
 
 
 ;; Playground
 
+(comment
+  ;; to iterate during development on style, add a watch to var that updates style in app
+  ;; state...
+  (add-watch
+   #'scenes/styles
+   :refresh-app
+   (fn [_ _ _ _] (dispatch-event {:event/type ::events/set-styles :data scenes/styles})))
+  ;; ... and remove it when you are done
+  (remove-watch #'scenes/styles :refresh-app))
+
+(comment (dispatch-event {:event/type ::events/set-styles :data scenes/styles}))
 (comment (dispatch-event {:event/type ::events/set-scene :data ::scenes/all-notes}))
 (comment (fx/mount-renderer *state renderer))

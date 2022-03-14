@@ -4,7 +4,7 @@
             [notebox.app-db.queries :as queries]
             [notebox.app-db.effects :as effects]))
 
-(def access-token "sl.BDmd9LOeE_ZbV0nqDyqOOI08_ebkdPsw9D75PibcjYtyNOd22t28cZqle4u14TA_YN-pjMR1AdOZ7MtN7gsdS2VlcqdjqzGMvY0t6syOsxeQnNboysda1GYCwDXUs6ZkcJh0v4JJ18JX")
+(def access-token "sl.BDsLNHbbyyrcyPygR5V_fhQ2ZKNOVN_8sJH2uFPXUAcA-7RDIpAgzRQKAahmdoQyFWva8bDTHbYpXFKPWPuJjmO9LhD1Mlncb0iFUB91RUJdr9kaZoZJdDpR6ziQAfReNsCrEhKbdfZC")
 
 
 ;; Notes events
@@ -29,6 +29,13 @@
 (defmethod event-handler ::set-scene [event]
   (let [{:keys [data context]} event]
     {:context (fx/sub-ctx context queries/assoc-scene data)}))
+
+
+;; Style events
+
+(defmethod event-handler ::set-styles [event]
+  (let [{:keys [data context]} event]
+    {:context (fx/sub-ctx context queries/assoc-styles data)}))
 
 
 ;; Main dispatch function
