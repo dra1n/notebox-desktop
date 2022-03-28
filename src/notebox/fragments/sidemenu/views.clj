@@ -7,4 +7,7 @@
                :text "side menu"}
               {:fx/type :button
                :text "refresh"
-               :on-action {:event/type ::events/fetch-notes-info}}]})
+               :on-action {:event/type ::events/fetch-notes-info}}
+              {:fx/type :button
+               :text "switch scene"
+               :on-action {:event/type ::events/set-scene :data :login}}]})

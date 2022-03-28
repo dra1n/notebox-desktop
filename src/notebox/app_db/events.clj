@@ -4,7 +4,7 @@
             [notebox.app-db.queries :as queries]
             [notebox.app-db.effects :as effects]))
 
-(def access-token "sl.BDsLNHbbyyrcyPygR5V_fhQ2ZKNOVN_8sJH2uFPXUAcA-7RDIpAgzRQKAahmdoQyFWva8bDTHbYpXFKPWPuJjmO9LhD1Mlncb0iFUB91RUJdr9kaZoZJdDpR6ziQAfReNsCrEhKbdfZC")
+(def access-token "sl.BErtxuq8dEWZqCyQjGQYfPM2i-1sxu2zSZVCZZIz7oDC8_lDTRbH4APCt97eoMUS_4uaN9KtXtHUFW9hzLw1rQgeoldoSTJBZiqG_V8p5wBbLz7EKwSDhHQN4p2FCczM3s18Cw87lqy2")
 
 
 ;; Notes events

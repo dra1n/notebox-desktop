@@ -28,7 +28,7 @@
 
 (defn -main [& _args]
   (Platform/setImplicitExit true)
-  (dispatch-event {:event/type ::events/set-scene :data ::scenes/all-notes})
+  (dispatch-event {:event/type ::events/set-scene :data :all-notes})
   (dispatch-event {:event/type ::events/set-styles :data scenes/styles})
   (fx/mount-renderer *state renderer))
 
@@ -45,7 +45,7 @@
   ;; ... and remove it when you are done
   (remove-watch #'scenes/styles :refresh-app))
 
-(comment (dispatch-event {:event/type ::events/set-scene :data ::scenes/all-notes}))
+(comment (dispatch-event {:event/type ::events/set-scene :data :all-notes}))
 (comment (dispatch-event {:event/type ::events/set-styles :data scenes/styles}))
 (comment (fx/mount-renderer *state renderer))
 (comment scenes/styles)
