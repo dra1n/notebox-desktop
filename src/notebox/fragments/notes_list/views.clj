@@ -5,11 +5,17 @@
             [notebox.app-db.queries :as queries]
             [notebox.scenes.shared.styles :as s]))
 
+
+;; Handlers
+
 (defn book-click-handler [book visible-books]
   (if (contains? visible-books book)
     (dispatch-event {:event/type ::events/remove-visible-book :data book})
     (do (dispatch-event {:event/type ::events/set-visible-book :data book})
         (dispatch-event {:event/type ::events/set-last-active-book :data book}))))
+
+
+;; Components
 
 (defn svg-path [{:keys [content hovered? scale-x scale-y]}]
   {:fx/type :svg-path
