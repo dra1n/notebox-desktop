@@ -6,6 +6,29 @@
 
 (def notes-db-key :notebox.notes)
 
+(defn hovered-book [context]
+  (fx/sub-val context get-in [notes-db-key :hovered-book]))
+
+(defn assoc-hovered-book [context value]
+  (fx/swap-context context assoc-in [notes-db-key :hovered-book] value))
+
+(defn visible-books [context]
+  (fx/sub-val context get-in [notes-db-key :visible-books]))
+
+(defn assoc-visible-book [context value]
+  (fx/swap-context
+   context
+   update-in
+   [notes-db-key :visible-books]
+   (fnil conj #{})
+   value))
+
+(defn remove-visible-book [context value]
+  (fx/swap-context context update-in [notes-db-key :visible-books] disj value))
+
+(defn assoc-last-active-book [context value]
+  (fx/swap-context context assoc-in [notes-db-key :last-active-book] value))
+
 (defn notes-info [context]
   (fx/sub-val context get-in [notes-db-key :notes-info]))
 

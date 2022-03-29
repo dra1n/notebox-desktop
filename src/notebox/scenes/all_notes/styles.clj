@@ -24,12 +24,16 @@
                      :-fx-border-color (::s/bg-light s/style)
                      :-fx-pref-width (::s/notelist-width s/style)}
 
-     ".notelist-book" {:-fx-padding [(::s/spacer-md s/style) (::s/spacer-lg s/style)]
+     ".notelist-book" {:-fx-padding [(::s/spacer-md s/style) (::s/spacer-md s/style)]
                        :-fx-border-style "hidden hidden solid hidden"
                        :-fx-border-width 1
                        :-fx-border-color (::s/bg-light s/style)}
 
      ".notelist-book-title" {:-fx-font-family (::s/font-family-base s/style)}
+
+     ".notelist-open-book-icon" {:-fx-padding [3 0 0 0]}
+
+     ".notelist-closed-book-icon" {:-fx-padding [4 0 0 0]}
 
      ".notelist-book-subtitle" {:-fx-text-fill (::s/text-grey-dark s/style)
                                 :-fx-font-size (::s/font-size-xs s/style)}

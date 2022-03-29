@@ -4,10 +4,26 @@
             [notebox.app-db.queries :as queries]
             [notebox.app-db.effects :as effects]))
 
-(def access-token "sl.BErtxuq8dEWZqCyQjGQYfPM2i-1sxu2zSZVCZZIz7oDC8_lDTRbH4APCt97eoMUS_4uaN9KtXtHUFW9hzLw1rQgeoldoSTJBZiqG_V8p5wBbLz7EKwSDhHQN4p2FCczM3s18Cw87lqy2")
+(def access-token "sl.BEtp3nky4vylLogvrhfXeiRsQLrVPFJYEaAf7LUPM0JCYSNg98XoPBqJo6q5P3ifWhij4U1R6-IkXxy42wL9Ecfb0Mo-N1P2QEIUxlFVTkNng1WTqRMpWKmrEFWowh8AcrIH998SctKY")
 
 
 ;; Notes events
+
+(defmethod event-handler ::set-visible-book [event]
+  (let [{:keys [data context]} event]
+    {:context (fx/sub-ctx context queries/assoc-visible-book data)}))
+
+(defmethod event-handler ::remove-visible-book [event]
+  (let [{:keys [data context]} event]
+    {:context (fx/sub-ctx context queries/remove-visible-book data)}))
+
+(defmethod event-handler ::set-hovered-book [event]
+  (let [{:keys [data context]} event]
+    {:context (fx/sub-ctx context queries/assoc-hovered-book data)}))
+
+(defmethod event-handler ::set-last-active-book [event]
+  (let [{:keys [data context]} event]
+    {:context (fx/sub-ctx context queries/assoc-last-active-book data)}))
 
 (defmethod event-handler ::set-notes-info [event]
   (let [{:keys [data context]} event]
