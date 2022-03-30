@@ -2,7 +2,6 @@
   (:require [cheshire.core :as json]
             [luggage.collections :as luggage]))
 
-(def access-token "sl.BDWMcP8l08_1kuAzmAq0Zsf_XoIgnbFkjVOau1kxBnuucDygfoMcWnSgUxSla12h1ViL_w_x3YAv-L-MnP8P7ZHqKs0JTz6Crl_-gBv8ZhGk_BgtspQAep5HfZeHbU4HNYQlW2-RmT1p")
 (def collections-name "notes")
 
 
@@ -43,37 +42,45 @@
                            :error error})))))))
 
 (defn fetch-tags-info
-  [{:keys [token callback error-callback]}]
-  (try
-    (-> {:access-token token
-         :collections-name collections-name}
-        (luggage/read-meta)
-        (:tagsInfo)
-        (callback))
-    (catch Exception e
-      (let [error (-> e (.getMessage) (json/parse-string))]
-        (cond (access-token-error? error)
-              (error-callback error))))))
+  [{:keys [token dispatch-success dispatch-error]} dispatch]
+  (future
+    (try
+      (-> {:access-token token
+           :collections-name collections-name}
+          (luggage/read-meta)
+          (:tagsInfo)
+          ((fn [data] (dispatch {:event/type dispatch-success
+                                 :data data}))))
+      (catch Exception e
+        (let [error (-> e (.getMessage) (json/parse-string))]
+          (cond (access-token-error? error)
+                (dispatch {:event/type dispatch-error
+                           :error error})))))))
 
 (defn fetch-book
-  [{:keys [token callback error-callback book]}]
-  (try
-    (-> {:access-token token
-         :collections-name collections-name}
-        (luggage/read-collection book)
-        (callback))
-    (catch Exception e
-      (let [error (-> e (.getMessage) (json/parse-string))]
-        (cond (access-token-error? error)
-              (error-callback error))))))
+  [{:keys [token dispatch-success dispatch-error book]} dispatch]
+  (future
+    (try
+      (-> {:access-token token
+           :collections-name collections-name}
+          (luggage/read-collection book)
+          ((fn [data] (dispatch {:event/type dispatch-success
+                                 :book book
+                                 :data data}))))
+      (catch Exception e
+        (let [error (-> e (.getMessage) (json/parse-string))]
+          (cond (access-token-error? error)
+                (dispatch {:event/type dispatch-error
+                           :error error})))))))
 
 (defn fetch-books
-  [{:keys [token callback error-callback books]}]
+  [{:keys [token callback error-callback books]} dispatch]
   (doseq [book books]
     (fetch-book {:token token
                  :callback callback
                  :error-callback error-callback
-                 :book book})))
+                 :book book}
+                dispatch)))
 
 (defn update-note
   [{:keys [token callback error-callback book note]}]
@@ -112,35 +119,3 @@
 ;;                (let [error (-> e (.getMessage) (json/parse-string))]
 ;;                  (cond (access-token-error? error)
 ;;                        (error-callback error)))))))
-
-;; Repl stuff
-
-(comment (fetch-tags-info {:token access-token
-                           :error-callback println
-                           :callback println}))
-
-(comment (fetch-book {:token access-token
-                      :error-callback println
-                      :book "tolstann"
-                      :callback println}))
-
-(comment (fetch-books {:token access-token
-                       :error-callback println
-                       :books ["todo"]
-                       :callback println}))
-
-(comment (update-note {:token access-token
-                       :error-callback println
-                       :book "tolstann"
-                       :note {:slug "a3" :title "rofl!!!"}
-                       :callback println}))
-
-(comment (add-note {:token access-token
-                    :error-callback println
-                    :book "tolstann"
-                    :note {:slug "a8" :title "new note"}
-                    :callback println}))
-
-(comment (luggage/create-collection
-          {:access-token access-token :collections-name collections-name}
-          "nada3"))

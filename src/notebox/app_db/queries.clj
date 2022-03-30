@@ -6,6 +6,7 @@
 
 (def notes-db-key :notebox.notes)
 
+
 (defn syncing? [context]
   (let [sync-values (fx/sub-val context get-in [notes-db-key :syncing])]
     (some true? (vals sync-values))))
@@ -13,11 +14,13 @@
 (defn assoc-syncing [context source value]
   (fx/swap-context context assoc-in [notes-db-key :syncing source] value))
 
+
 (defn hovered-book [context]
   (fx/sub-val context get-in [notes-db-key :hovered-book]))
 
 (defn assoc-hovered-book [context value]
   (fx/swap-context context assoc-in [notes-db-key :hovered-book] value))
+
 
 (defn visible-books [context]
   (fx/sub-val context get-in [notes-db-key :visible-books]))
@@ -36,8 +39,20 @@
 (defn assoc-last-active-book [context value]
   (fx/swap-context context assoc-in [notes-db-key :last-active-book] value))
 
+
 (defn notes-info [context]
   (fx/sub-val context get-in [notes-db-key :notes-info]))
+
+(defn assoc-notes-info [context value]
+  (fx/swap-context context assoc-in [notes-db-key :notes-info] value))
+
+
+(defn book [context book]
+  (fx/sub-val context get-in [notes-db-key :notes book]))
+
+(defn assoc-book [context book value]
+  (fx/swap-context context assoc-in [notes-db-key :notes book] value))
+
 
 (defn books-count [context]
   (-> (fx/sub-ctx context notes-info)
@@ -48,13 +63,11 @@
        (map :count)
        (apply +)))
 
-(defn assoc-notes-info [context value]
-  (fx/swap-context context assoc-in [notes-db-key :notes-info] value))
-
 
 ;; Scences
 
 (def scene-db-key :notebox.scene)
+
 
 (defn scene [context]
   (fx/sub-val context get-in [scene-db-key :current]))
@@ -66,6 +79,7 @@
 ;; Styles
 
 (def styles-db-key :notebox.styles)
+
 
 (defn styles [context]
   (fx/sub-val context styles-db-key))

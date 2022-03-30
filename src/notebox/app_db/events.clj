@@ -9,32 +9,6 @@
 
 ;; Notes events
 
-(defmethod event-handler ::set-visible-book [event]
-  (let [{:keys [data context]} event]
-    {:context (fx/sub-ctx context queries/assoc-visible-book data)}))
-
-(defmethod event-handler ::remove-visible-book [event]
-  (let [{:keys [data context]} event]
-    {:context (fx/sub-ctx context queries/remove-visible-book data)}))
-
-(defmethod event-handler ::set-hovered-book [event]
-  (let [{:keys [data context]} event]
-    {:context (fx/sub-ctx context queries/assoc-hovered-book data)}))
-
-(defmethod event-handler ::set-last-active-book [event]
-  (let [{:keys [data context]} event]
-    {:context (fx/sub-ctx context queries/assoc-last-active-book data)}))
-
-(defmethod event-handler ::set-notes-info [event]
-  (let [{:keys [data context]} event]
-    {:context (fx/sub-ctx context queries/assoc-notes-info data)
-     :dispatch {:event/type ::stop-sync :source ::fetch-notes-info}}))
-
-(defmethod event-handler ::set-error [event]
-  (let [{:keys [error]} event]
-    (println error)
-    {:dispatch {:event/type ::stop-sync :source ::fetch-notes-info}}))
-
 (defmethod event-handler ::start-sync [event]
   (let [{:keys [source context]} event]
     {:context (fx/sub-ctx context queries/assoc-syncing source true)}))
@@ -43,11 +17,60 @@
   (let [{:keys [source context]} event]
     {:context (fx/sub-ctx context queries/assoc-syncing source false)}))
 
+
+(defmethod event-handler ::set-visible-book [event]
+  (let [{:keys [data context]} event]
+    {:context (fx/sub-ctx context queries/assoc-visible-book data)}))
+
+(defmethod event-handler ::remove-visible-book [event]
+  (let [{:keys [data context]} event]
+    {:context (fx/sub-ctx context queries/remove-visible-book data)}))
+
+
+(defmethod event-handler ::set-hovered-book [event]
+  (let [{:keys [data context]} event]
+    {:context (fx/sub-ctx context queries/assoc-hovered-book data)}))
+
+
+(defmethod event-handler ::set-last-active-book [event]
+  (let [{:keys [data context]} event]
+    {:context (fx/sub-ctx context queries/assoc-last-active-book data)}))
+
+
+(defmethod event-handler ::set-notes-info [event]
+  (let [{:keys [data context]} event]
+    {:context (fx/sub-ctx context queries/assoc-notes-info data)
+     :dispatch {:event/type ::stop-sync :source ::fetch-notes-info}}))
+
+(defmethod event-handler ::set-notes-info-error [event]
+  (let [{:keys [error]} event]
+    (println error)
+    {:dispatch {:event/type ::stop-sync :source ::fetch-notes-info}}))
+
 (defmethod event-handler ::fetch-notes-info [_]
   {:dispatch {:event/type ::start-sync :source ::fetch-notes-info}
    :fetch-notes-info {:token access-token
                       :dispatch-success ::set-notes-info
-                      :dispatch-error ::set-error}})
+                      :dispatch-error ::set-notes-info-error}})
+
+
+(defmethod event-handler ::set-book [event]
+  (let [{:keys [book data context]} event]
+    {:context (fx/sub-ctx context queries/assoc-book book data)
+     :dispatch {:event/type ::stop-sync :source [::fetch-book book]}}))
+
+(defmethod event-handler ::set-book-error [event]
+  (let [{:keys [error book]} event]
+    (println error)
+    {:dispatch {:event/type ::stop-sync :source [::fetch-book book]}}))
+
+(defmethod event-handler ::fetch-book [event]
+  (let [{:keys [data]} event]
+    {:dispatch {:event/type ::start-sync :source [::fetch-book data]}
+     :fetch-book {:token access-token
+                  :book data
+                  :dispatch-success ::set-book
+                  :dispatch-error ::set-book-error}}))
 
 
 ;; Scene events
@@ -71,11 +94,14 @@
       (fx/wrap-co-effects {:context (fx/make-deref-co-effect *state)})
       (fx/wrap-effects {:context (fx/make-reset-effect *state)
                         :dispatch fx/dispatch-effect
-                        :fetch-notes-info effects/fetch-notes-info})))
+                        :fetch-notes-info effects/fetch-notes-info
+                        :fetch-book effects/fetch-book})))
 
 
 ;; Playground
 
 (comment (dispatch-event {:event/type ::set-notes-info :data nil}))
-(comment (dispatch-event {:event/type ::set-screen :data :all_notes}))
+(comment (dispatch-event {:event/type ::set-scene :data :all_notes}))
+(comment (dispatch-event {:event/type ::fetch-notes-info}))
+(comment (dispatch-event {:event/type ::fetch-book :data "tolstann"}))
 (comment @*state)
