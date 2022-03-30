@@ -6,6 +6,13 @@
 
 (def notes-db-key :notebox.notes)
 
+(defn syncing? [context]
+  (let [sync-values (fx/sub-val context get-in [notes-db-key :syncing])]
+    (some true? (vals sync-values))))
+
+(defn assoc-syncing [context source value]
+  (fx/swap-context context assoc-in [notes-db-key :syncing source] value))
+
 (defn hovered-book [context]
   (fx/sub-val context get-in [notes-db-key :hovered-book]))
 

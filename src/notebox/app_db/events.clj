@@ -4,7 +4,7 @@
             [notebox.app-db.queries :as queries]
             [notebox.app-db.effects :as effects]))
 
-(def access-token "sl.BEtp3nky4vylLogvrhfXeiRsQLrVPFJYEaAf7LUPM0JCYSNg98XoPBqJo6q5P3ifWhij4U1R6-IkXxy42wL9Ecfb0Mo-N1P2QEIUxlFVTkNng1WTqRMpWKmrEFWowh8AcrIH998SctKY")
+(def access-token "sl.BEzEOWBO0dUyUvu-6ZzPvDKnUYBhP4ykkJ6eQ6n0fn6n5ah2BZw9F1-l8GOxloFCBgGvKI_kHDGg1VCjV_zxhNEky6sbpiPnt9ZIpojJ7xm32O7I6S8u1JBIOO3mnR5Yrrc7vlKfCqIy")
 
 
 ;; Notes events
@@ -27,15 +27,25 @@
 
 (defmethod event-handler ::set-notes-info [event]
   (let [{:keys [data context]} event]
-    {:context (fx/sub-ctx context queries/assoc-notes-info data)}))
+    {:context (fx/sub-ctx context queries/assoc-notes-info data)
+     :dispatch {:event/type ::stop-sync :source ::fetch-notes-info}}))
 
 (defmethod event-handler ::set-error [event]
   (let [{:keys [error]} event]
     (println error)
-    {}))
+    {:dispatch {:event/type ::stop-sync :source ::fetch-notes-info}}))
+
+(defmethod event-handler ::start-sync [event]
+  (let [{:keys [source context]} event]
+    {:context (fx/sub-ctx context queries/assoc-syncing source true)}))
+
+(defmethod event-handler ::stop-sync [event]
+  (let [{:keys [source context]} event]
+    {:context (fx/sub-ctx context queries/assoc-syncing source false)}))
 
 (defmethod event-handler ::fetch-notes-info [_]
-  {:fetch-notes-info {:token access-token
+  {:dispatch {:event/type ::start-sync :source ::fetch-notes-info}
+   :fetch-notes-info {:token access-token
                       :dispatch-success ::set-notes-info
                       :dispatch-error ::set-error}})
 

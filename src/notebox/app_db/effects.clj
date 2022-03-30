@@ -28,18 +28,19 @@
 
 (defn fetch-notes-info
   [{:keys [token dispatch-success dispatch-error]} dispatch]
-  (try
-    (-> {:access-token token
-         :collections-name collections-name}
-        (luggage/read-meta)
-        (:notesInfo)
-        ((fn [data] (dispatch {:event/type dispatch-success
-                               :data data}))))
-    (catch Exception e
-      (let [error (-> e (.getMessage) (json/parse-string))]
-        (cond (access-token-error? error)
-              (dispatch {:event/type dispatch-error
-                         :error error}))))))
+  (future
+    (try
+      (-> {:access-token token
+           :collections-name collections-name}
+          (luggage/read-meta)
+          (:notesInfo)
+          ((fn [data] (dispatch {:event/type dispatch-success
+                                 :data data}))))
+      (catch Exception e
+        (let [error (-> e (.getMessage) (json/parse-string))]
+          (cond (access-token-error? error)
+                (dispatch {:event/type dispatch-error
+                           :error error})))))))
 
 (defn fetch-tags-info
   [{:keys [token callback error-callback]}]
