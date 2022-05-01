@@ -1,5 +1,6 @@
 (ns notebox.fragments.notes-list.views
   (:require [cljfx.api :as fx]
+            [clojure.string :as str]
             [inflections.core :as inf]
             [notebox.app-db.events :as events :refer [dispatch-event]]
             [notebox.app-db.queries :as queries]
@@ -8,11 +9,13 @@
 
 ;; Handlers
 
-(defn book-click-handler [book visible-books]
+(defn book-click-handler [{:keys [book notes visible-books]}]
   (if (contains? visible-books book)
     (dispatch-event {:event/type ::events/remove-visible-book :data book})
     (do (dispatch-event {:event/type ::events/set-visible-book :data book})
-        (dispatch-event {:event/type ::events/set-last-active-book :data book}))))
+        (dispatch-event {:event/type ::events/set-last-active-book :data book})
+        (cond (not (contains? notes book))
+              (dispatch-event {:event/type ::events/fetch-book :data book})))))
 
 
 ;; Components
@@ -62,23 +65,52 @@
       {:fx/type open-book-icon :book book}
       {:fx/type closed-book-icon :book book})))
 
+(defn book-notes [{:keys [notes]}]
+  {:fx/type :v-box
+   :style-class "notelist-notes"
+   :children (mapv (fn [note] {:fx/type :v-box
+                               :style-class "notelist-note"
+                               :children [{:fx/type :label
+                                           :style-class "notelist-note-title"
+                                           :text  (if (str/blank? (:title note))
+                                                    "No title"
+                                                    (:title note))}
+                                          {:fx/type :label
+                                           :style-class "notelist-note-text"
+                                           :text  (if (str/blank? (:text note))
+                                                    "No additional text"
+                                                    (:text note))}]})
+                   notes)})
+
+
 (defn book-block [{:keys [book fx/context]}]
-  (let [visible-books (fx/sub-ctx context queries/visible-books)]
+  (let [visible-books (fx/sub-ctx context queries/visible-books)
+        notes (fx/sub-ctx context queries/notes)]
     {:fx/type :v-box
-     :style-class "notelist-book"
-     :on-mouse-entered {:event/type ::events/set-hovered-book :data (:slug book)}
-     :on-mouse-exited {:event/type ::events/set-hovered-book :data nil}
-     :on-mouse-clicked (fn [_] (book-click-handler (:slug book) visible-books))
-     :children [{:fx/type :h-box
-                 :children [{:fx/type book-icon
-                             :book (:slug book)}
-                            {:fx/type :v-box
-                             :children [{:fx/type :label
-                                         :style-class "notelist-book-title"
-                                         :text (:title book)}
-                                        {:fx/type :label
-                                         :style-class "notelist-book-subtitle"
-                                         :text (inf/pluralize (:count book) "note")}]}]}]}))
+     :children [{:fx/type :v-box
+                 :style-class "notelist-book"
+                 :on-mouse-entered {:event/type ::events/set-hovered-book :data (:slug book)}
+                 :on-mouse-exited {:event/type ::events/set-hovered-book :data nil}
+                 :children [{:fx/type :h-box
+                             :on-mouse-clicked (fn [_]
+                                                 (book-click-handler {:book (:slug book)
+                                                                      :visible-books visible-books
+                                                                      :notes notes}))
+                             :children [{:fx/type book-icon
+                                         :book (:slug book)}
+                                        {:fx/type :v-box
+                                         :children [{:fx/type :label
+                                                     :style-class "notelist-book-title"
+                                                     :text (:title book)}
+                                                    {:fx/type :label
+                                                     :style-class "notelist-book-subtitle"
+                                                     :text (inf/pluralize (:count book) "note")}]}]}]}
+                (if (and (seq (get notes (:slug book)))
+                         (contains? visible-books (:slug book)))
+                  {:fx/type book-notes
+                   :notes (get notes (:slug book))}
+                  {:fx/type :v-box :children []})]}))
+
 
 (defn notes-list [{:keys [fx/context]}]
   (let [books (fx/sub-ctx context queries/notes-info)
@@ -91,6 +123,10 @@
                              :text (str
                                     (inf/pluralize books-count "book") ", "
                                     (inf/pluralize notes-count "note"))}
-                            {:fx/type :v-box
-                             :children (mapv (fn [book] {:fx/type book-block :book book})
-                                             books)}]}]}))
+                            {:fx/type :scroll-pane
+                             :style-class "scroll-pane"
+                             :fit-to-width true
+                             :fit-to-height true
+                             :content {:fx/type :v-box
+                                       :children (mapv (fn [book] {:fx/type book-block :book book})
+                                                       books)}}]}]}))

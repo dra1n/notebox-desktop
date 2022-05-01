@@ -9,6 +9,26 @@
     s/style
     {"*" {:-fx-font-family (::s/font-family-base s/style)
           :-fx-text-fill (::s/text s/style)}
+     ".scroll-pane" {:-fx-background-color "transparent"
+                     :-fx-background-insets 0
+                     :-fx-padding 0}
+     ".scroll-pane:focused" {:-fx-background-insets 0}
+     ".scroll-pane > .corner" {:-fx-background-color "transparent"
+                               :-fx-background-insets 0}
+     ".scroll-pane > .viewport" {:-fx-background-color "transparent"}
+     ".scroll-pane > .scroll-bar" {:-fx-background-color "transparent"}
+     ".scroll-pane > .scroll-bar > .increment-button,
+      .scroll-pane > .scroll-bar > .increment-button > .increment-arrow,
+      .scroll-pane > .scroll-bar > .decrement-button,
+      .scroll-pane > .scroll-bar > .decrement-button > .decrement-arrow" {:-fx-padding 0}
+     ".scroll-pane > .scroll-bar > .thumb" {:-fx-background-color "#888"
+                                            :-fx-background-radius 8
+                                            :-fx-background-insets 0
+                                            :-fx-padding 0}
+     ".scroll-pane > .scroll-bar > .track" {:-fx-background-color "#0002"
+                                            :-fx-background-radius 8}
+     ".scroll-pane > .scroll-bar:vertical" {:-fx-pref-width 8}
+     ".scroll-pane > .scroll-bar:horizontal" {:-fx-pref-height 8}
 
      ".sidemenu" {:-fx-background-color (::s/bg-dark s/style)}
 
@@ -25,6 +45,12 @@
                      :-fx-pref-width (::s/notelist-width s/style)}
 
      ".notelist-book" {:-fx-padding [(::s/spacer-md s/style) (::s/spacer-md s/style)]
+                       :-fx-border-style "hidden hidden solid hidden"
+                       :-fx-border-width 1
+                       :-fx-border-color (::s/bg-light s/style)}
+
+     ".notelist-note" {:-fx-padding [(::s/spacer-md s/style) (::s/spacer-md s/style)]
+                       :-fx-background-color (::s/white s/style)
                        :-fx-border-style "hidden hidden solid hidden"
                        :-fx-border-width 1
                        :-fx-border-color (::s/bg-light s/style)}

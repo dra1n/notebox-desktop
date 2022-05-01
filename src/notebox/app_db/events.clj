@@ -1,10 +1,11 @@
 (ns notebox.app-db.events
   (:require [cljfx.api :as fx]
+            [clojure.pprint]
             [notebox.app-db.db :refer [*state event-handler]]
             [notebox.app-db.queries :as queries]
             [notebox.app-db.effects :as effects]))
 
-(def access-token "sl.BEzEOWBO0dUyUvu-6ZzPvDKnUYBhP4ykkJ6eQ6n0fn6n5ah2BZw9F1-l8GOxloFCBgGvKI_kHDGg1VCjV_zxhNEky6sbpiPnt9ZIpojJ7xm32O7I6S8u1JBIOO3mnR5Yrrc7vlKfCqIy")
+(def access-token "sl.BGz94vK4D62nHj9IyMoJ1EwSMYwjmmyxwzsZ9LrQlwX-NZxp6tz04W5XqN1PJVgOUnN9es8btBlRcC1Wg3YJAsNhcT937xanrFcoeQshZPUQmx6E3R2YnigVIXFuzffl-RqKACv5MIgn")
 
 
 ;; Notes events
@@ -104,4 +105,4 @@
 (comment (dispatch-event {:event/type ::set-scene :data :all_notes}))
 (comment (dispatch-event {:event/type ::fetch-notes-info}))
 (comment (dispatch-event {:event/type ::fetch-book :data "tolstann"}))
-(comment @*state)
+(comment (clojure.pprint/pprint @*state))

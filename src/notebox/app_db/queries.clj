@@ -53,6 +53,9 @@
 (defn assoc-book [context book value]
   (fx/swap-context context assoc-in [notes-db-key :notes book] value))
 
+(defn notes [context]
+  (fx/sub-val context get-in [notes-db-key :notes]))
+
 
 (defn books-count [context]
   (-> (fx/sub-ctx context notes-info)
