@@ -10,7 +10,7 @@
 (defn all-notes [{:keys [fx/context]}]
   (let [styles (fx/sub-ctx context queries/styles)]
     {:fx/type :scene
-     :stylesheets [(::css/url (:all-notes styles))]
+     :stylesheets ["styles.css" (::css/url (:all-notes styles))]
      :root {:fx/type :h-box
             :children [{:fx/type :v-box
                         :style-class "sidemenu"

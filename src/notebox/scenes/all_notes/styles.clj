@@ -7,8 +7,8 @@
    ::style
    (merge
     s/style
-    {"*" {:-fx-font-family (::s/font-family-base s/style)
-          :-fx-text-fill (::s/text s/style)}
+    {"*" {:-fx-text-fill (::s/text s/style)
+          :-fx-font-family (::s/font-family-base s/style)}
      ".scroll-pane" {:-fx-background-color "transparent"
                      :-fx-background-insets 0
                      :-fx-padding 0}
@@ -53,9 +53,10 @@
                        :-fx-background-color (::s/white s/style)
                        :-fx-border-style "hidden hidden solid hidden"
                        :-fx-border-width 1
-                       :-fx-border-color (::s/bg-light s/style)}
+                       :-fx-border-color (::s/bg-light s/style)
+                       :-fx-pref-height 10}
 
-     ".notelist-book-title" {:-fx-font-family (::s/font-family-base s/style)}
+     ".notelist-book-title" {}
 
      ".notelist-open-book-icon" {:-fx-padding [3 0 0 0]}
 
@@ -63,6 +64,12 @@
 
      ".notelist-book-subtitle" {:-fx-text-fill (::s/text-grey-dark s/style)
                                 :-fx-font-size (::s/font-size-xs s/style)}
+
+     ".notelist-note-title" {:-fx-font-size (::s/font-size-md s/style)
+                             :-fx-font-weight "bold"
+                             :-fx-padding [0 0 (::s/spacer-xs s/style) 0]}
+
+     ".notelist-note-text" {:-fx-text-fill (::s/text-grey-dark s/style)}
 
      ".note" {:-fx-background-color (::s/white s/style)}})))
 

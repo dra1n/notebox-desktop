@@ -28,7 +28,7 @@
                  ::white "#fff"
 
                  ;;font-family
-                 ::font-family-base "'roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+                 ::font-family-base "Roboto"
 
                  ;; font-size
                  ::font-size-xs "12px"
