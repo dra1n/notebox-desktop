@@ -78,6 +78,13 @@
                   :dispatch-error ::set-book-error}}))
 
 
+;; Subscene events
+
+(defmethod event-handler ::set-subscene [event]
+  (let [{:keys [name data context]} event]
+    {:context (fx/sub-ctx context queries/assoc-subscene name data)}))
+
+
 ;; Scene events
 
 (defmethod event-handler ::set-scene [event]

@@ -74,6 +74,20 @@
   (fx/swap-context context assoc-in [notes-db-key :last-active-note] value))
 
 
+;; Subscenes
+
+(defn subscene [context]
+  (fx/sub-val context get-in [notes-db-key :subscene]))
+
+(defn subscene-data [context]
+  (fx/sub-val context get-in [notes-db-key :subscene-data]))
+
+(defn assoc-subscene [context name data]
+  (-> context
+      (fx/swap-context assoc-in [notes-db-key :subscene] name)
+      (fx/swap-context assoc-in [notes-db-key :subscene-data] data)))
+
+
 ;; Scences
 
 (def scene-db-key :notebox.scene)

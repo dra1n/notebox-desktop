@@ -7,6 +7,15 @@
             [notebox.fragments.note.views :refer [note]]
             [notebox.scenes.shared.styles :as s]))
 
+(defn subscene-view [{:keys [fx/context]}]
+  (let [subscene (fx/sub-ctx context queries/subscene)
+        subscene-data (fx/sub-ctx context queries/subscene-data)]
+    (cond (= subscene :show-note) {:fx/type note
+                                   :note (:note subscene-data)
+                                   :book (:book subscene-data)}
+          :else {:fx/type :label
+                 :text "Empty note"})))
+
 (defn all-notes [{:keys [fx/context]}]
   (let [styles (fx/sub-ctx context queries/styles)]
     {:fx/type :scene
@@ -23,4 +32,4 @@
                        {:fx/type :v-box
                         :style-class "note"
                         :h-box/hgrow :always
-                        :children [{:fx/type note}]}]}}))
+                        :children [{:fx/type subscene-view}]}]}}))

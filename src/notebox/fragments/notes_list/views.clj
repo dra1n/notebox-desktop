@@ -20,8 +20,11 @@
         (cond (not (contains? notes book))
               (dispatch-event {:event/type ::events/fetch-book :data book})))))
 
-(defn note-click-handler [{:keys [note]}]
-  (dispatch-event {:event/type ::events/set-last-active-note :data note}))
+(defn note-click-handler [{:keys [note book]}]
+  (dispatch-event {:event/type ::events/set-subscene
+                   :name :show-note
+                   :data {:note note :book book}})
+  (dispatch-event {:event/type ::events/set-last-active-note :data (:slug note)}))
 
 
 ;; Components
@@ -71,14 +74,14 @@
       {:fx/type open-book-icon :book book}
       {:fx/type closed-book-icon :book book})))
 
-(defn book-notes [{:keys [notes active-note]}]
+(defn book-notes [{:keys [book notes active-note]}]
   {:fx/type :v-box
    :style-class "notelist-notes"
    :children (mapv (fn [note] {:fx/type :v-box
                                :style-class ["notelist-note"
                                              (add-class-if "notelist-note-active" (= (:slug note) active-note))]
                                :on-mouse-clicked (fn [_]
-                                                   (note-click-handler {:note (:slug note)}))
+                                                   (note-click-handler {:note note :book book}))
                                :children [{:fx/type :label
                                            :style-class "notelist-note-title"
                                            :text  (if (str/blank? (:title note))
@@ -119,6 +122,7 @@
                          (contains? visible-books (:slug book)))
                   {:fx/type book-notes
                    :active-note active-note
+                   :book book
                    :notes (get notes (:slug book))}
                   {:fx/type :v-box :children []})]}))
 
