@@ -67,6 +67,13 @@
        (apply +)))
 
 
+(defn last-active-note [context]
+  (fx/sub-val context get-in [notes-db-key :last-active-note]))
+
+(defn assoc-last-active-note [context value]
+  (fx/swap-context context assoc-in [notes-db-key :last-active-note] value))
+
+
 ;; Scences
 
 (def scene-db-key :notebox.scene)

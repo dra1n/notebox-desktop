@@ -56,6 +56,8 @@
                        :-fx-border-color (::s/bg-light s/style)
                        :-fx-pref-height 10}
 
+     ".notelist-note-active" {:-fx-background-color (::s/cyan-lightest s/style)}
+
      ".notelist-book-title" {}
 
      ".notelist-open-book-icon" {:-fx-padding [3 0 0 0]}

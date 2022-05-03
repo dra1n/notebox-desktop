@@ -6,6 +6,9 @@
             [notebox.app-db.queries :as queries]
             [notebox.scenes.shared.styles :as s]))
 
+(defn add-class-if [name cond]
+  (if cond name ""))
+
 
 ;; Handlers
 
@@ -16,6 +19,9 @@
         (dispatch-event {:event/type ::events/set-last-active-book :data book})
         (cond (not (contains? notes book))
               (dispatch-event {:event/type ::events/fetch-book :data book})))))
+
+(defn note-click-handler [{:keys [note]}]
+  (dispatch-event {:event/type ::events/set-last-active-note :data note}))
 
 
 ;; Components
@@ -65,11 +71,14 @@
       {:fx/type open-book-icon :book book}
       {:fx/type closed-book-icon :book book})))
 
-(defn book-notes [{:keys [notes]}]
+(defn book-notes [{:keys [notes active-note]}]
   {:fx/type :v-box
    :style-class "notelist-notes"
    :children (mapv (fn [note] {:fx/type :v-box
-                               :style-class "notelist-note"
+                               :style-class ["notelist-note"
+                                             (add-class-if "notelist-note-active" (= (:slug note) active-note))]
+                               :on-mouse-clicked (fn [_]
+                                                   (note-click-handler {:note (:slug note)}))
                                :children [{:fx/type :label
                                            :style-class "notelist-note-title"
                                            :text  (if (str/blank? (:title note))
@@ -85,6 +94,7 @@
 
 (defn book-block [{:keys [book fx/context]}]
   (let [visible-books (fx/sub-ctx context queries/visible-books)
+        active-note (fx/sub-ctx context queries/last-active-note)
         notes (fx/sub-ctx context queries/notes)]
     {:fx/type :v-box
      :children [{:fx/type :v-box
@@ -108,6 +118,7 @@
                 (if (and (seq (get notes (:slug book)))
                          (contains? visible-books (:slug book)))
                   {:fx/type book-notes
+                   :active-note active-note
                    :notes (get notes (:slug book))}
                   {:fx/type :v-box :children []})]}))
 

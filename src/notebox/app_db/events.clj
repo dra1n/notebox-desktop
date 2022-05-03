@@ -54,6 +54,10 @@
                       :dispatch-success ::set-notes-info
                       :dispatch-error ::set-notes-info-error}})
 
+(defmethod event-handler ::set-last-active-note [event]
+  (let [{:keys [data context]} event]
+    {:context (fx/sub-ctx context queries/assoc-last-active-note data)}))
+
 
 (defmethod event-handler ::set-book [event]
   (let [{:keys [book data context]} event]
