@@ -68,10 +68,17 @@
                                  :book book
                                  :data data}))))
       (catch Exception e
+        ;; Exception message isn't always parsable
+        ;; For example download exception will look something like this
+        ;;   Exception in 2/files/download: {".tag":"path","path":"not_found"}
+        ;; In this case it seems that future is not resolved and we 
+        ;; silently swallow the exception. If this happens then try to
+        ;; log the messsage before parsing
         (let [error (-> e (.getMessage) (json/parse-string))]
           (cond (access-token-error? error)
                 (dispatch {:event/type dispatch-error
-                           :error error})))))))
+                           :error error})
+                :else (println (.getMessage e))))))))
 
 (defn fetch-books
   [{:keys [token callback error-callback books]} dispatch]
