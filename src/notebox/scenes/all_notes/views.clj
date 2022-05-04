@@ -5,7 +5,7 @@
             [notebox.fragments.sidemenu.views :refer [sidemenu]]
             [notebox.fragments.notes-list.views :refer [notes-list]]
             [notebox.fragments.note.views :refer [note]]
-            [notebox.scenes.shared.styles :as s]))
+            [notebox.common.styles :as s]))
 
 (defn subscene-view [{:keys [fx/context]}]
   (let [subscene (fx/sub-ctx context queries/subscene)
@@ -19,7 +19,11 @@
 (defn all-notes [{:keys [fx/context]}]
   (let [styles (fx/sub-ctx context queries/styles)]
     {:fx/type :scene
-     :stylesheets ["styles.css" (::css/url (:all-notes styles))]
+     :stylesheets ["styles.css"
+                   (::css/url (:common styles))
+                   (::css/url (:all-notes styles))
+                   (::css/url (:note-list styles))
+                   (::css/url (:note styles))]
      :root {:fx/type :h-box
             :children [{:fx/type :v-box
                         :style-class "sidemenu"

@@ -4,7 +4,7 @@
             [inflections.core :as inf]
             [notebox.app-db.events :as events :refer [dispatch-event]]
             [notebox.app-db.queries :as queries]
-            [notebox.scenes.shared.styles :as s]))
+            [notebox.common.styles :as s]))
 
 (defn add-class-if [name cond]
   (if cond name ""))
