@@ -38,8 +38,8 @@
     ::font-size-lg "24px"
     ::font-size-xl "36px"
 
-    ::line-height-md "1.44"
-    ::line-height-sm "1.28"
+    ::line-height-md "0.28em"
+    ::line-height-sm "0.1em"
 
                  ;; space
     ::spacer-xxs "4px"

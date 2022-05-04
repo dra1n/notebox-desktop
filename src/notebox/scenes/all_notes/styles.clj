@@ -5,8 +5,7 @@
 (def style
   (css/register
    ::style
-   {"*" {:-fx-text-fill (::s/text s/style)
-         :-fx-font-family (::s/font-family-base s/style)}
+   {"*" {:-fx-font-family (::s/font-family-base s/style)}
 
     ".sidemenu" {:-fx-background-color (::s/bg-dark s/style)}
 

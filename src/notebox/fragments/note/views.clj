@@ -2,13 +2,20 @@
 
 (defn note [{:keys [note]}]
   {:fx/type :v-box
-   :children [{:fx/type :label
-               :style-class "note-title"
-               :text (:title note)}
-              {:fx/type :text-flow
+   :style-class "note-content"
+   :children [{:fx/type :text-flow
+               :style-class "note-title-wrapper"
                :pref-width 400
                :children [{:fx/type :text
+                           :style-class "note-title"
                            :cache true
+                           :cache-hint :speed
+                           :text (:title note)}]}
+              {:fx/type :text-flow
+               :style-class "note-text-wrapper"
+               :pref-width 400
+               :children [{:fx/type :text
                            :style-class "note-text"
+                           :cache true
                            :cache-hint :speed
                            :text (:text note)}]}]})
