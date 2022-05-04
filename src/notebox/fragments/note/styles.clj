@@ -8,6 +8,8 @@
    {".note-content" {:-fx-padding [(::s/spacer-md s/style) (::s/spacer-xl s/style)]}
     ".note-title-wrapper" {:-fx-padding [(::s/spacer-md s/style) 0 (::s/spacer-lg s/style) 0]
                            :-fx-line-spacing (::s/line-height-md s/style)}
+    ".note-book" {:-fx-text-fill (::s/text-grey s/style)
+                  :-fx-font-size (::s/font-size-sm s/style)}
     ".note-title" {:-fx-fill (::s/text s/style)
                    :-fx-font-size (::s/font-size-lg s/style)
                    :-fx-font-weight "bold"

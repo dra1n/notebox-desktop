@@ -4,7 +4,7 @@
             [inflections.core :as inf]
             [notebox.app-db.events :as events :refer [dispatch-event]]
             [notebox.app-db.queries :as queries]
-            [notebox.common.styles :as s]))
+            [notebox.common.svg-path.views :refer [svg-path]]))
 
 (defn add-class-if [name cond]
   (if cond name ""))
@@ -28,15 +28,6 @@
 
 
 ;; Components
-
-(defn svg-path [{:keys [content hovered? scale-x scale-y]}]
-  {:fx/type :svg-path
-   :fill (if hovered?
-           (::s/text-grey s/style)
-           (::s/text-grey-slight s/style))
-   :scale-x (or scale-x 1)
-   :scale-y (or scale-y 1)
-   :content content})
 
 (defn closed-book-icon [{:keys [book fx/context]}]
   (let [hovered-book (fx/sub-ctx context queries/hovered-book)
@@ -104,11 +95,11 @@
                  :style-class "notelist-book"
                  :on-mouse-entered {:event/type ::events/set-hovered-book :data (:slug book)}
                  :on-mouse-exited {:event/type ::events/set-hovered-book :data nil}
+                 :on-mouse-clicked (fn [_]
+                                     (book-click-handler {:book (:slug book)
+                                                          :visible-books visible-books
+                                                          :notes notes}))
                  :children [{:fx/type :h-box
-                             :on-mouse-clicked (fn [_]
-                                                 (book-click-handler {:book (:slug book)
-                                                                      :visible-books visible-books
-                                                                      :notes notes}))
                              :children [{:fx/type book-icon
                                          :book (:slug book)}
                                         {:fx/type :v-box
