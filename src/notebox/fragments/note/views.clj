@@ -4,7 +4,6 @@
   {:fx/type :scroll-pane
    :style-class "scroll-pane"
    :fit-to-width true
-   :fit-to-height true
    :content {:fx/type :v-box
              :style-class "note-content"
              :children [{:fx/type :text-flow
