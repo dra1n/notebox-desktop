@@ -36,4 +36,5 @@
                        {:fx/type :v-box
                         :style-class "note"
                         :h-box/hgrow :always
-                        :children [{:fx/type subscene-view}]}]}}))
+                        :children [{:fx/type subscene-view
+                                    :v-box/vgrow :always}]}]}}))
