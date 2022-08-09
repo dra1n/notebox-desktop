@@ -8,7 +8,8 @@
 
 
 (defmethod event-handler ::initialize [_]
-  {:dispatch {:event/type ::start-auth-flow}})
+  {:dispatch-n [{:event/type ::start-auth-flow}
+                {:event/type ::set-scene :data :all-notes}]})
 
 
 ;; Auth events
