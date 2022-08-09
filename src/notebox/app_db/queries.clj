@@ -110,3 +110,26 @@
 
 (defn assoc-styles [context value]
   (fx/swap-context context assoc styles-db-key value))
+
+
+;; Auth
+
+(def auth-db-key :notebox.auth)
+
+(defn auth-code [context]
+  (fx/sub-val context get-in [auth-db-key :code]))
+
+(defn assoc-auth-code [context value]
+  (fx/swap-context context assoc-in [auth-db-key :code] value))
+
+(defn access-token [context]
+  (fx/sub-val context get-in [auth-db-key :access-token]))
+
+(defn assoc-access-token [context value]
+  (fx/swap-context context assoc-in [auth-db-key :access-token] value))
+
+(defn authorize-url [context]
+  (fx/sub-val context get-in [auth-db-key :authorize-url]))
+
+(defn assoc-authorize-url [context value]
+  (fx/swap-context context assoc-in [auth-db-key :authorize-url] value))

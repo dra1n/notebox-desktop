@@ -1,17 +1,43 @@
 (ns notebox.app-db.events
   (:require [cljfx.api :as fx]
+            [clojure.string :as str]
             [clojure.pprint]
             [notebox.app-db.db :refer [*state event-handler]]
             [notebox.app-db.queries :as queries]
             [notebox.app-db.effects :as effects]))
 
-(def access-token "sl.BMz3FKdLf05Wv_UxfCBNDvfE8I42lwbrU3CwKrWQa3WkVQ1xjo1RvtWuSoMMMMnQII3PaUZmeKBwRWN8mzFlLGsdUCff1Q7Fa4A-gxsiU1qrPVdOK8TLOFzRDXh9-0tXZi7_81Do6J0m")
+
+(defmethod event-handler ::initialize [_]
+  {:dispatch {:event/type ::start-auth-flow}})
 
 
 ;; Auth events
 
-(defmethod event-handler ::check-auth [event]
-  (println event))
+(defmethod event-handler ::start-auth-flow [_]
+  {:start-auth-flow {:auth-finished ::set-auth-finished
+                     :auth-login-required ::switch-to-login-pane}})
+
+(defmethod event-handler ::set-auth-finished [event]
+  (let [{:keys [access-token context]} event]
+    {:context (fx/sub-ctx context queries/assoc-access-token access-token)
+     :dispatch-n [{:event/type ::set-scene :data :all-notes}
+                  {:event/type ::fetch-notes-info}]}))
+
+(defmethod event-handler ::switch-to-login-pane [event]
+  (let [{:keys [authorize-url context]} event]
+    {:context (fx/sub-ctx context queries/assoc-authorize-url authorize-url)
+     :dispatch {:event/type ::set-scene :data :login}}))
+
+(defmethod event-handler ::set-auth-code [event]
+  (let [{:keys [data context]} event]
+    {:context (fx/sub-ctx context queries/assoc-auth-code data)}))
+
+(defmethod event-handler ::apply-auth-code [event]
+  (let [{:keys [context]} event
+        auth-code (fx/sub-ctx context queries/auth-code)]
+    (cond (not (str/blank? auth-code))
+          {:apply-auth-code {:auth-code auth-code
+                             :auth-finished ::set-auth-finished}})))
 
 
 ;; Notes events
@@ -54,11 +80,13 @@
     (println error)
     {:dispatch {:event/type ::stop-sync :source ::fetch-notes-info}}))
 
-(defmethod event-handler ::fetch-notes-info [_]
-  {:dispatch {:event/type ::start-sync :source ::fetch-notes-info}
-   :fetch-notes-info {:token access-token
-                      :dispatch-success ::set-notes-info
-                      :dispatch-error ::set-notes-info-error}})
+(defmethod event-handler ::fetch-notes-info [event]
+  (let [{:keys [context]} event
+        access-token (fx/sub-ctx context queries/access-token)]
+    {:dispatch {:event/type ::start-sync :source ::fetch-notes-info}
+     :fetch-notes-info {:token access-token
+                        :dispatch-success ::set-notes-info
+                        :dispatch-error ::set-notes-info-error}}))
 
 (defmethod event-handler ::set-last-active-note [event]
   (let [{:keys [data context]} event]
@@ -76,7 +104,8 @@
     {:dispatch {:event/type ::stop-sync :source [::fetch-book book]}}))
 
 (defmethod event-handler ::fetch-book [event]
-  (let [{:keys [data]} event]
+  (let [{:keys [data context]} event
+        access-token (fx/sub-ctx context queries/access-token)]
     {:dispatch {:event/type ::start-sync :source [::fetch-book data]}
      :fetch-book {:token access-token
                   :book data
@@ -112,6 +141,9 @@
       (fx/wrap-co-effects {:context (fx/make-deref-co-effect *state)})
       (fx/wrap-effects {:context (fx/make-reset-effect *state)
                         :dispatch fx/dispatch-effect
+                        :dispatch-n effects/dispatch-n
+                        :start-auth-flow effects/start-auth-flow
+                        :apply-auth-code effects/apply-auth-code
                         :fetch-notes-info effects/fetch-notes-info
                         :fetch-book effects/fetch-book})))
 

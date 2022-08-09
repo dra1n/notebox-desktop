@@ -1,24 +1,34 @@
 (ns notebox.fragments.auth.views
   (:require [cljfx.api :as fx]
-            [cljfx.lifecycle :as lifecycle]
-            [cljfx.mutator :as mutator]
-            [cljfx.prop :as prop]
-            [notebox.app-db.events :as events]
-            [luggage.client :as luggage])
-  (:import [javafx.scene.web WebView]))
+            [clojure.string :as str]
+            [notebox.app-db.queries :as queries]
+            [notebox.app-db.events :as events :refer [dispatch-event]])
+  (:import [java.awt Desktop]
+           [java.net URI]))
 
-(def web-view-with-ext-props
-  (fx/make-ext-with-props
-   {:on-location-changed (prop/make (mutator/property-change-listener
-                                     #(.locationProperty (.getEngine ^WebView %)))
-                                    lifecycle/change-listener)}))
+(defn auth-link [{:keys [fx/context]}]
+  (let [authorize-url (fx/sub-ctx context queries/authorize-url)]
+    {:fx/type :hyperlink
+     :text "Sign in with Dropbox"
+     :on-action (fn [_]
+                  (future
+                    (try
+                      (.browse (Desktop/getDesktop)
+                               (URI. authorize-url))
+                      (catch Exception e
+                        (.printStackTrace e)))))}))
 
-;; The web-pane function returns the extended web-view that has the additional property :on-location-changed installed.
-(defn web-pane [_]
-  (let [authorize-url (luggage/create-authorize-url)]
-    {:fx/type web-view-with-ext-props
-     :desc {:fx/type :web-view
-            :pref-height 600
-            :pref-width 800
-            :url authorize-url}
-     :props {:on-location-changed {:event/type ::events/check-auth}}}))
+(defn auth [_]
+  {:fx/type :v-box
+   :children [{:fx/type :h-box
+               :children [{:fx/type :label :text "1. Go to "}
+                          {:fx/type auth-link}]}
+              {:fx/type :label :text "2. Click \"Allow\" (you might have to log in first)."}
+              {:fx/type :label :text "3. Copy the authorization code."}
+              {:fx/type :label :text "4. Enter the authorization code here: "}
+              {:fx/type :text-field
+               :on-text-changed #(dispatch-event
+                                  {:event/type ::events/set-auth-code :data (str/trim %)})}
+              {:fx/type :button
+               :text "Start"
+               :on-action {:event/type ::events/apply-auth-code}}]})

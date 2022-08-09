@@ -1,8 +1,43 @@
 (ns notebox.app-db.effects
   (:require [cheshire.core :as json]
+            [luggage.client :as client]
             [luggage.collections :as luggage]))
 
 (def collections-name "notes")
+
+
+;; Utils
+
+(defn dispatch-n
+  [events dispatch]
+  (doseq [event events] (dispatch event)))
+
+
+;; Auth Flow
+
+(defn start-auth-flow
+  [{:keys [auth-finished auth-login-required]} dispatch]
+  (future
+    (try (client/refresh-credential)
+         (let [credential (client/read-credential)]
+           (dispatch {:event/type auth-finished
+                      :access-token (.getAccessToken credential)}))
+         (catch Exception e
+           (println e)
+           (dispatch {:event/type auth-login-required
+                      :authorize-url (client/create-authorize-url)})))))
+
+(defn apply-auth-code
+  [{:keys [auth-code auth-finished]} dispatch]
+  (future
+    (try (-> auth-code
+             (client/finish-authorize-flow)
+             (client/write-credential))
+         (let [credential (client/read-credential)]
+           (dispatch {:event/type auth-finished
+                      :access-token (.getAccessToken credential)}))
+         (catch Exception e
+           (println e)))))
 
 
 ;; Notes Utils
