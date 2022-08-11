@@ -28,10 +28,10 @@
     ::bg-orange-bright "#FF6D26"
     ::white "#fff"
 
-                 ;;font-family
+    ;;font-family
     ::font-family-base "Roboto"
 
-                 ;; font-size
+    ;; font-size
     ::font-size-xs "12px"
     ::font-size-sm "14px"
     ::font-size-md "16px"
@@ -41,7 +41,7 @@
     ::line-height-md "0.28em"
     ::line-height-sm "0.1em"
 
-                 ;; space
+    ;; space
     ::spacer-xxs "4px"
     ::spacer-xs "7px"
     ::spacer-sm "9px"
@@ -50,12 +50,12 @@
     ::spacer-xl "33px"
     ::spacer-xxl "48px"
 
-                 ;; size
+    ;; size
     ::menu-width 200
     ::notelist-width 300
     ::mobile-header-height 50
 
-                 ;; z-index
+    ;; z-index
     ::zindex-subzero "-1"
     ::zindex-zero-value "0"
     ::zindex-min-value "1"
@@ -65,7 +65,25 @@
     ::zindex-syncing "9"
     ::zindex-flash-message "10"
 
-                 ;; scrollbar
+    ;; buttons
+    ".button-primary" {:-fx-background-color "#ADE4EA"
+                       :-fx-text-fill "#323232"
+                       :-fx-background-radius 3
+                       :-fx-background-insets 0
+                       :-fx-padding [4 16]
+                       ":hover" {:-fx-background-color "#8ED6DE"}
+                       ":pressed" {:-fx-background-color "#3CB0BD"}}
+
+    ;; inputs    
+    ".text-field" {:-fx-background-color "#fff"
+                   :-fx-background-radius 3
+                   :-fx-border-radius 3
+                   :-fx-border-color "#C6C6C6"
+                   :-fx-border-width 1
+                   :-fx-prompt-text-fill "#afafaf"
+                   :-fx-text-fill "#323232"}
+
+    ;; scrollbar
     ".scroll-pane" {:-fx-background-color "transparent"
                     :-fx-background-insets 0
                     :-fx-padding 0}

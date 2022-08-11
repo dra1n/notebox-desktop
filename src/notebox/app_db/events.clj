@@ -9,7 +9,7 @@
 
 (defmethod event-handler ::initialize [_]
   {:dispatch-n [{:event/type ::start-auth-flow}
-                {:event/type ::set-scene :data :all-notes}]})
+                {:event/type ::set-scene :data :splash}]})
 
 
 ;; Auth events

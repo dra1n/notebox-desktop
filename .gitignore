@@ -8,3 +8,4 @@
 .calva
 .lsp
 .clj-kondo/.cache
+.DS_Store
