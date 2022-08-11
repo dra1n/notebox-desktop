@@ -13,6 +13,7 @@
 
 (defn root [{:keys [fx/context]}]
   {:fx/type :stage
+   :on-close-request (fn [_] (System/exit 0))
    :showing true
    :width 1024
    :height 600
