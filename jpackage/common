@@ -1,6 +1,6 @@
 --input dist
 --main-jar notebox.jar
---name "notebox"
+--name "Notebox"
 --main-class clojure.main
 --arguments -m
 --arguments notebox.core
