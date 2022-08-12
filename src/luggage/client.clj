@@ -12,7 +12,7 @@
            [com.dropbox.core.v2 DbxClientV2]
            [java.io File]))
 
-(def app-key "2t7xyn3a902rv0z")
+(def app-key "yeo22moig39n8c0")
 (def config-path "~/.notebox")
 (def credentials-path (str config-path "/credentials"))
 
