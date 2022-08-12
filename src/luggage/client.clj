@@ -77,9 +77,6 @@
 ;; Playground
 
 (comment (println (create-authorize-url)))
-(comment (def auth-finish (finish-authorize-flow "w7gUxoguV8wAAAAAAAAWJnxI6NI9LBo2txw8hcLhV1Q")))
-(comment (.getAccessToken auth-finish))
-(comment (write-credential auth-finish))
 (comment (def credential (read-credential)))
 (comment (.aboutToExpire credential))
 (comment (.refresh credential request-config))
