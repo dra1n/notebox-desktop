@@ -5,10 +5,13 @@
 (def style
   (css/register
    ::style
-   {".notes-count" {:-fx-padding [(::s/spacer-md s/style) (::s/spacer-lg s/style)]
+   {".notes-search" {:-fx-padding [(::s/spacer-md s/style) (::s/spacer-lg s/style) 0]}
+    ".notes-count" {:-fx-padding [(::s/spacer-sm s/style) (::s/spacer-lg s/style) (::s/spacer-md s/style)]
                     :-fx-border-style "hidden hidden solid hidden"
                     :-fx-border-width 1
                     :-fx-border-color (::s/bg-light s/style)
+                    :-fx-font-size (::s/font-size-xs s/style)
+                    :-fx-text-fill (::s/text-grey-dark s/style)
                     :-fx-pref-width (::s/notelist-width s/style)}
 
     ".notelist-book" {:-fx-padding [(::s/spacer-md s/style) (::s/spacer-md s/style)]

@@ -124,7 +124,11 @@
         notes-count (fx/sub-ctx context queries/notes-count)]
     {:fx/type :v-box
      :children [{:fx/type :v-box
-                 :children [{:fx/type :label
+                 :children [{:fx/type :v-box
+                             :style-class "notes-search"
+                             :children [{:fx/type :text-field
+                                         :prompt-text "Search"}]}
+                            {:fx/type :label
                              :style-class "notes-count"
                              :text (str
                                     (inf/pluralize books-count "book") ", "

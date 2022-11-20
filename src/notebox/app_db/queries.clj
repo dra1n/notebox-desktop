@@ -53,6 +53,9 @@
 (defn assoc-book [context book value]
   (fx/swap-context context assoc-in [notes-db-key :notes book] value))
 
+(defn reset-books [context]
+  (fx/swap-context context assoc-in [notes-db-key :notes] nil))
+
 (defn notes [context]
   (fx/sub-val context get-in [notes-db-key :notes]))
 
@@ -72,6 +75,40 @@
 
 (defn assoc-last-active-note [context value]
   (fx/swap-context context assoc-in [notes-db-key :last-active-note] value))
+
+
+;; Search
+
+(defn search-value [context]
+  (fx/sub-val context get-in [notes-db-key :search-value]))
+
+(defn assoc-search-started [context value]
+  (-> context
+      (fx/swap-context assoc-in [notes-db-key :search-started?] true)
+      (fx/swap-context assoc-in [notes-db-key :search-value] value)))
+
+(defn assoc-search-finished [context]
+  (-> context
+      (fx/swap-context assoc-in [notes-db-key :search-started?] false)
+      (fx/swap-context update-in [notes-db-key] dissoc :search-value)
+      (fx/swap-context update-in [notes-db-key] dissoc :search-results)))
+
+(defn assoc-search-results [context book value]
+  (let [search-results (map #(merge {:book book} %) value)]
+    (-> context
+        (fx/swap-context update-in [notes-db-key :search-results] concat search-results)
+        (fx/swap-context update-in [notes-db-key :search-results] distinct))))
+
+(defn search-results [context]
+  (fx/sub-val context get-in [notes-db-key :search-results]))
+
+(defn search-results-count [context]
+  (-> context
+      (fx/sub-ctx search-results)
+      (count)))
+
+(defn search-started? [context]
+  (fx/sub-val context get-in [notes-db-key :search-started?]))
 
 
 ;; Subscenes

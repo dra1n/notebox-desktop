@@ -1,5 +1,6 @@
 (ns notebox.app-db.events
-  (:require [cljfx.api :as fx]
+  (:require [clojure.set]
+            [cljfx.api :as fx]
             [clojure.string :as str]
             [clojure.pprint]
             [notebox.app-db.db :refer [*state event-handler]]
@@ -114,6 +115,59 @@
                   :dispatch-error ::set-book-error}}))
 
 
+;; Search events
+
+(defmethod event-handler ::start-search [event]
+  (let [{:keys [context data]} event
+        books-for-search (-> context
+                             (fx/sub-ctx queries/notes)
+                             (keys))]
+    {:context (fx/sub-ctx context queries/assoc-search-started data)
+     :dispatch {:event/type ::fetch-and-search :data data}
+     :dispatch-n (map (fn [v] {:event/type ::search-in-book :data v})
+                      books-for-search)}))
+
+(defmethod event-handler ::finish-search [event]
+  (let [{:keys [context]} event]
+    {:context (queries/assoc-search-finished context)}))
+
+(defmethod event-handler ::search-in-book [event]
+  (let [{:keys [context data]} event
+        search-value (fx/sub-ctx context queries/search-value)
+        notes (fx/sub-ctx context queries/notes)]
+    {:search-in-book {:notes (get notes data)
+                      :value search-value
+                      :book data
+                      :dispatch-success ::add-search-result}}))
+
+(defmethod event-handler ::add-search-result [event]
+  (let [{:keys [context book data]} event]
+    {:context (fx/sub-ctx context queries/assoc-search-results book data)}))
+
+(defmethod event-handler ::fetch-and-search [event]
+  (let [{:keys [context]} event
+        access-token (fx/sub-ctx context queries/access-token)
+        all-books (->> (fx/sub-ctx context queries/notes-info)
+                       (map :slug))
+        fetched-books (-> context
+                          (fx/sub-ctx queries/notes)
+                          (keys))
+        books-for-later-search (vec (clojure.set/difference (set all-books) (set fetched-books)))]
+    {:fetch-books
+     {:token access-token
+      :books books-for-later-search
+      :dispatch-success ::book-ready-for-search
+      :dispatch-error ::set-book-error}
+     :dispatch-n (mapv (fn [v] {:event/type ::start-sync :source [::fetch-book v]})
+                       books-for-later-search)}))
+
+(defmethod event-handler ::book-ready-for-search [event]
+  (let [{:keys [context book data]} event]
+    {:context (fx/sub-ctx context queries/assoc-book book data)
+     :dispatch-n [{:event/type ::stop-sync :source [::fetch-book book]}
+                  {:event/type ::search-in-book :data book}]}))
+
+
 ;; Subscene events
 
 (defmethod event-handler ::set-subscene [event]
@@ -146,7 +200,9 @@
                         :start-auth-flow effects/start-auth-flow
                         :apply-auth-code effects/apply-auth-code
                         :fetch-notes-info effects/fetch-notes-info
-                        :fetch-book effects/fetch-book})))
+                        :fetch-book effects/fetch-book
+                        :fetch-books effects/fetch-books
+                        :search-in-book effects/search-in-book})))
 
 
 ;; Playground
@@ -155,4 +211,12 @@
 (comment (dispatch-event {:event/type ::set-scene :data :all_notes}))
 (comment (dispatch-event {:event/type ::fetch-notes-info}))
 (comment (dispatch-event {:event/type ::fetch-book :data "tolstann"}))
+(comment (dispatch-event {:event/type ::start-search :data "лень"}))
+(comment (dispatch-event {:event/type ::finish-search}))
+(comment
+  (defmethod event-handler ::reset-books [event]
+    (let [{:keys [context]} event]
+      {:context (fx/sub-ctx context queries/reset-books)}))
+
+  (dispatch-event {:event/type ::reset-books}))
 (comment (clojure.pprint/pprint @*state))

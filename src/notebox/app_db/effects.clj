@@ -1,5 +1,6 @@
 (ns notebox.app-db.effects
-  (:require [cheshire.core :as json]
+  (:require [clojure.string :as string]
+            [cheshire.core :as json]
             [luggage.client :as client]
             [luggage.collections :as luggage]))
 
@@ -56,6 +57,33 @@
   (-> note
       (dissoc :book-title)
       (dissoc :book-slug)))
+
+(defn matches-text [text]
+  (fn [note]
+    (or (empty? text)
+        (let [filter-text (-> text (string/trim) (string/lower-case))]
+          (or (and (:title note)
+                   (string/includes? (string/lower-case (:title note))
+                                     filter-text))
+              (and (:tags note)
+                   (string/includes? (string/lower-case (string/join " " (:tags note)))
+                                     filter-text))
+              (and (:text note)
+                   (string/includes? (string/lower-case (:text note))
+                                     filter-text)))))))
+
+(defn perform-search [notes value]
+  (filterv (matches-text value) notes))
+
+
+;; Notes Search
+
+(defn search-in-book
+  [{:keys [notes value book dispatch-success]} dispatch]
+  (let [search-results (perform-search notes value)]
+    (dispatch {:event/type dispatch-success
+               :book book
+               :data search-results})))
 
 
 ;; Notes Effects
@@ -116,13 +144,14 @@
                 :else (println (.getMessage e))))))))
 
 (defn fetch-books
-  [{:keys [token callback error-callback books]} dispatch]
-  (doseq [book books]
-    (fetch-book {:token token
-                 :callback callback
-                 :error-callback error-callback
-                 :book book}
-                dispatch)))
+  [{:keys [token dispatch-success dispatch-error books]} dispatch]
+  (future
+    (doseq [book books]
+      (fetch-book {:token token
+                   :dispatch-success dispatch-success
+                   :dispatch-error dispatch-error
+                   :book book}
+                  dispatch))))
 
 (defn update-note
   [{:keys [token callback error-callback book note]}]
