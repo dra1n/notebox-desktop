@@ -203,15 +203,31 @@
                            :style-class "notes-search-button"
                            :children [{:fx/type search-reset-button}]}]}]})
 
-(defn notes-list [{:keys [fx/context]}]
+(defn notes-count [{:keys [:fx/context]}]
   (let [books-count (fx/sub-ctx context queries/books-count)
         notes-count (fx/sub-ctx context queries/notes-count)]
-    {:fx/type :v-box
-     :children [{:fx/type :v-box
-                 :children [{:fx/type search-action}
-                            {:fx/type :label
-                             :style-class "notes-count"
-                             :text (str
-                                    (inf/pluralize books-count "book") ", "
-                                    (inf/pluralize notes-count "note"))}
-                            {:fx/type books-or-search-results}]}]}))
+    {:fx/type :label
+     :style-class "notes-count"
+     :text (str
+            (inf/pluralize books-count "book") ", "
+            (inf/pluralize notes-count "note"))}))
+
+(defn notes-search-results-count [{:keys [:fx/context]}]
+  (let [search-results-count (fx/sub-ctx context queries/search-results-count)]
+    {:fx/type :label
+     :style-class "notes-count"
+     :text
+     (inf/pluralize search-results-count "search result")}))
+
+(defn notes-count-info [{:keys [:fx/context]}]
+  (let [search-started? (fx/sub-ctx context queries/search-started?)]
+    (if search-started?
+      {:fx/type notes-search-results-count}
+      {:fx/type notes-count})))
+
+(defn notes-list [_]
+  {:fx/type :v-box
+   :children [{:fx/type :v-box
+               :children [{:fx/type search-action}
+                          {:fx/type notes-count-info}
+                          {:fx/type books-or-search-results}]}]})
