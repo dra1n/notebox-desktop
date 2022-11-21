@@ -6,6 +6,7 @@
   (css/register
    ::style
    {".notes-search" {:-fx-padding [(::s/spacer-md s/style) (::s/spacer-lg s/style) 0]}
+    ".notes-search-button" {:-fx-padding [1 0 0 10]}
     ".notes-count" {:-fx-padding [(::s/spacer-sm s/style) (::s/spacer-lg s/style) (::s/spacer-md s/style)]
                     :-fx-border-style "hidden hidden solid hidden"
                     :-fx-border-width 1

@@ -21,6 +21,12 @@
 (defn assoc-hovered-book [context value]
   (fx/swap-context context assoc-in [notes-db-key :hovered-book] value))
 
+(defn search-input-value [context]
+  (fx/sub-val context get-in [notes-db-key :search-input-value]))
+
+(defn assoc-search-input-value [context value]
+  (fx/swap-context context assoc-in [notes-db-key :search-input-value] value))
+
 
 (defn visible-books [context]
   (fx/sub-val context get-in [notes-db-key :visible-books]))

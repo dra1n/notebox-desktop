@@ -62,10 +62,14 @@
     {:context (fx/sub-ctx context queries/remove-visible-book data)}))
 
 
+(defmethod event-handler ::set-search-input-value [event]
+  (let [{:keys [data context]} event]
+    {:context (fx/sub-ctx context queries/assoc-search-input-value data)}))
+
+
 (defmethod event-handler ::set-hovered-book [event]
   (let [{:keys [data context]} event]
     {:context (fx/sub-ctx context queries/assoc-hovered-book data)}))
-
 
 (defmethod event-handler ::set-last-active-book [event]
   (let [{:keys [data context]} event]

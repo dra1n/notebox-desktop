@@ -27,6 +27,15 @@
                    :data {:note note :book book}})
   (dispatch-event {:event/type ::events/set-last-active-note :data (:slug note)}))
 
+(defn search-handler [value]
+  (if (str/blank? value)
+    (dispatch-event {:event/type ::events/finish-search})
+    (do
+      (dispatch-event {:event/type ::events/finish-search})
+      (dispatch-event {:event/type ::events/start-search :data value}))))
+
+(def debounced-search-handler (utils/debounce search-handler 500))
+
 
 ;; Components
 
@@ -156,32 +165,50 @@
      :notes notes
      :books books}))
 
+(defn search-reset-button [{:keys [fx/context]}]
+  (let [search-started? (fx/sub-ctx context queries/search-started?)]
+    (if search-started?
+      {:fx/type :button
+       :text "clear"
+       :on-action (fn [_]
+                    (dispatch-event {:event/type ::events/finish-search})
+                    (dispatch-event {:event/type ::events/set-search-input-value
+                                     :data ""}))}
+      {:fx/type :v-box :children nil})))
+
 (defn books-or-search-results [{:keys [fx/context]}]
   (let [search-started? (fx/sub-ctx context queries/search-started?)]
     (if search-started?
       {:fx/type search-results-block}
       {:fx/type books-block})))
 
-(defn search-field [_]
-  (let [search-handler (fn [value]
-                         (if (str/blank? value)
-                           (dispatch-event {:event/type ::events/finish-search})
-                           (do
-                             (dispatch-event {:event/type ::events/finish-search})
-                             (dispatch-event {:event/type ::events/start-search :data value}))))
-        debounced-search-handler (utils/debounce search-handler 500)]
-    {:fx/type :v-box
-     :style-class "notes-search"
-     :children [{:fx/type :text-field
-                 :prompt-text "Search"
-                 :on-text-changed debounced-search-handler}]}))
+(defn search-field [{:keys [:fx/context search-handler]}]
+  (let [search-input-value (fx/sub-ctx context queries/search-input-value)]
+    {:fx/type :text-field
+     :prompt-text "Search"
+     :text search-input-value
+     :on-text-changed (fn [value]
+                        (search-handler value)
+                        (dispatch-event {:event/type ::events/set-search-input-value
+                                         :data value}))}))
+
+(defn search-action [_]
+  {:fx/type :v-box
+   :style-class "notes-search"
+   :children [{:fx/type :h-box
+               :children [{:fx/type search-field
+                           :h-box/hgrow :always
+                           :search-handler debounced-search-handler}
+                          {:fx/type :v-box
+                           :style-class "notes-search-button"
+                           :children [{:fx/type search-reset-button}]}]}]})
 
 (defn notes-list [{:keys [fx/context]}]
   (let [books-count (fx/sub-ctx context queries/books-count)
         notes-count (fx/sub-ctx context queries/notes-count)]
     {:fx/type :v-box
      :children [{:fx/type :v-box
-                 :children [{:fx/type search-field}
+                 :children [{:fx/type search-action}
                             {:fx/type :label
                              :style-class "notes-count"
                              :text (str
