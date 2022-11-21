@@ -2,6 +2,7 @@
   (:require [cljfx.api :as fx]
             [clojure.string :as str]
             [inflections.core :as inf]
+            [notebox.common.utils :as utils]
             [notebox.app-db.events :as events :refer [dispatch-event]]
             [notebox.app-db.queries :as queries]
             [notebox.common.svg-path.views :refer [svg-path]]))
@@ -65,26 +66,45 @@
       {:fx/type open-book-icon :book book}
       {:fx/type closed-book-icon :book book})))
 
+(defn single-note [{:keys [book note active-note]}]
+  {:fx/type :v-box
+   :style-class ["notelist-note"
+                 (add-class-if "notelist-note-active" (= (:slug note) active-note))]
+   :on-mouse-clicked (fn [_]
+                       (note-click-handler {:note note :book book}))
+   :children [{:fx/type :label
+               :style-class "notelist-note-title"
+               :text  (if (str/blank? (:title note))
+                        "No title"
+                        (:title note))}
+              {:fx/type :label
+               :style-class "notelist-note-text"
+               :text  (if (str/blank? (:text note))
+                        "No additional text"
+                        (:text note))}]})
+
 (defn book-notes [{:keys [book notes active-note]}]
   {:fx/type :v-box
    :style-class "notelist-notes"
-   :children (mapv (fn [note] {:fx/type :v-box
-                               :style-class ["notelist-note"
-                                             (add-class-if "notelist-note-active" (= (:slug note) active-note))]
-                               :on-mouse-clicked (fn [_]
-                                                   (note-click-handler {:note note :book book}))
-                               :children [{:fx/type :label
-                                           :style-class "notelist-note-title"
-                                           :text  (if (str/blank? (:title note))
-                                                    "No title"
-                                                    (:title note))}
-                                          {:fx/type :label
-                                           :style-class "notelist-note-text"
-                                           :text  (if (str/blank? (:text note))
-                                                    "No additional text"
-                                                    (:text note))}]})
+   :children (mapv (fn [note] {:fx/type single-note
+                               :note note
+                               :book book
+                               :active-note active-note})
                    notes)})
 
+
+(defn search-notes [{:keys [notes books active-note]}]
+  {:fx/type :v-box
+   :style-class "notelist-notes"
+   :children (mapv (fn [note]
+                     (let [book (->> books
+                                     (filter (comp #{(:book note)} :slug))
+                                     (first))]
+                       {:fx/type single-note
+                        :note note
+                        :book book
+                        :active-note active-note}))
+                   notes)})
 
 (defn book-block [{:keys [book fx/context]}]
   (let [visible-books (fx/sub-ctx context queries/visible-books)
@@ -117,26 +137,54 @@
                    :notes (get notes (:slug book))}
                   {:fx/type :v-box :children []})]}))
 
+(defn books-block [{:keys [fx/context]}]
+  (let [books (fx/sub-ctx context queries/notes-info)]
+    {:fx/type :scroll-pane
+     :style-class "scroll-pane"
+     :fit-to-width true
+     :fit-to-height true
+     :content {:fx/type :v-box
+               :children (mapv (fn [book] {:fx/type book-block :book book})
+                               books)}}))
+
+(defn search-results-block [{:keys [fx/context]}]
+  (let [notes (fx/sub-ctx context queries/search-results)
+        books (fx/sub-ctx context queries/notes-info)
+        active-note (fx/sub-ctx context queries/last-active-note)]
+    {:fx/type search-notes
+     :active-note active-note
+     :notes notes
+     :books books}))
+
+(defn books-or-search-results [{:keys [fx/context]}]
+  (let [search-started? (fx/sub-ctx context queries/search-started?)]
+    (if search-started?
+      {:fx/type search-results-block}
+      {:fx/type books-block})))
+
+(defn search-field [_]
+  (let [search-handler (fn [value]
+                         (if (str/blank? value)
+                           (dispatch-event {:event/type ::events/finish-search})
+                           (do
+                             (dispatch-event {:event/type ::events/finish-search})
+                             (dispatch-event {:event/type ::events/start-search :data value}))))
+        debounced-search-handler (utils/debounce search-handler 500)]
+    {:fx/type :v-box
+     :style-class "notes-search"
+     :children [{:fx/type :text-field
+                 :prompt-text "Search"
+                 :on-text-changed debounced-search-handler}]}))
 
 (defn notes-list [{:keys [fx/context]}]
-  (let [books (fx/sub-ctx context queries/notes-info)
-        books-count (fx/sub-ctx context queries/books-count)
+  (let [books-count (fx/sub-ctx context queries/books-count)
         notes-count (fx/sub-ctx context queries/notes-count)]
     {:fx/type :v-box
      :children [{:fx/type :v-box
-                 :children [{:fx/type :v-box
-                             :style-class "notes-search"
-                             :children [{:fx/type :text-field
-                                         :prompt-text "Search"}]}
+                 :children [{:fx/type search-field}
                             {:fx/type :label
                              :style-class "notes-count"
                              :text (str
                                     (inf/pluralize books-count "book") ", "
                                     (inf/pluralize notes-count "note"))}
-                            {:fx/type :scroll-pane
-                             :style-class "scroll-pane"
-                             :fit-to-width true
-                             :fit-to-height true
-                             :content {:fx/type :v-box
-                                       :children (mapv (fn [book] {:fx/type book-block :book book})
-                                                       books)}}]}]}))
+                            {:fx/type books-or-search-results}]}]}))

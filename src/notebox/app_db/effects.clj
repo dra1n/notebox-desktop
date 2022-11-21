@@ -127,9 +127,10 @@
       (-> {:access-token token
            :collections-name collections-name}
           (luggage/read-collection book)
-          ((fn [data] (dispatch {:event/type dispatch-success
-                                 :book book
-                                 :data data}))))
+          ((fn [data]
+             (dispatch {:event/type dispatch-success
+                        :book book
+                        :data data}))))
       (catch Exception e
         ;; Exception message isn't always parsable
         ;; For example download exception will look something like this
