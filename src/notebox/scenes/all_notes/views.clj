@@ -29,7 +29,8 @@
             :children [{:fx/type :v-box
                         :style-class "sidemenu"
                         :pref-width (::s/menu-width s/style)
-                        :children [{:fx/type sidemenu}]}
+                        :children [{:fx/type sidemenu
+                                    :v-box/vgrow :always}]}
                        {:fx/type :v-box
                         :style-class "notelist"
                         :pref-width (::s/notelist-width s/style)
