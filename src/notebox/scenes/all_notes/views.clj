@@ -23,6 +23,7 @@
                    (::css/url (:common styles))
                    (::css/url (:all-notes styles))
                    (::css/url (:note-list styles))
+                   (::css/url (:sidemenu styles))
                    (::css/url (:note styles))]
      :root {:fx/type :h-box
             :children [{:fx/type :v-box

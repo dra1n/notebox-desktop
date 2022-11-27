@@ -7,6 +7,7 @@
             [notebox.fragments.logo.styles :as logo.styles]
             [notebox.fragments.auth.styles :as auth.styles]
             [notebox.fragments.notes-list.styles :as notes-list.styles]
+            [notebox.fragments.sidemenu.styles :as sidemenu.styles]
             [notebox.scenes.all-notes.styles :as all-notes.styles]
             [notebox.scenes.splash.styles :as splash.styles]
             [notebox.scenes.login.styles :as login.styles]))
@@ -22,4 +23,5 @@
              :splash splash.styles/style
              :login login.styles/style
              :note note.styles/style
-             :note-list notes-list.styles/style})
+             :note-list notes-list.styles/style
+             :sidemenu sidemenu.styles/style})

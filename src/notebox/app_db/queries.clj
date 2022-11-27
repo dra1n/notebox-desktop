@@ -117,6 +117,18 @@
   (fx/sub-val context get-in [notes-db-key :search-started?]))
 
 
+;; Account
+
+(def account-db-key :notebox.account)
+
+(defn account-info [context]
+  (fx/sub-val context get-in [account-db-key :account-info]))
+
+(defn assoc-account-info [context value]
+  (-> context
+      (fx/swap-context assoc-in [account-db-key :account-info] value)))
+
+
 ;; Subscenes
 
 (defn subscene [context]

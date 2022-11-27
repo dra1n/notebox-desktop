@@ -20,6 +20,10 @@
       (account)
       (.getEmail)))
 
+(defn account-info [access-token]
+  {:name (account-name access-token)
+   :email (account-email access-token)})
+
 
 ;; Playground
 

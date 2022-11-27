@@ -23,7 +23,8 @@
   (let [{:keys [access-token context]} event]
     {:context (fx/sub-ctx context queries/assoc-access-token access-token)
      :dispatch-n [{:event/type ::set-scene :data :all-notes}
-                  {:event/type ::fetch-notes-info}]}))
+                  {:event/type ::fetch-notes-info}
+                  {:event/type ::fetch-account-info}]}))
 
 (defmethod event-handler ::switch-to-login-pane [event]
   (let [{:keys [authorize-url context]} event]
@@ -119,6 +120,27 @@
                   :dispatch-error ::set-book-error}}))
 
 
+;; Account events
+
+(defmethod event-handler ::set-account-info [event]
+  (let [{:keys [data context]} event]
+    {:context (fx/sub-ctx context queries/assoc-account-info data)
+     :dispatch {:event/type ::stop-sync :source ::fetch-account-info}}))
+
+(defmethod event-handler ::set-account-info-error [event]
+  (let [{:keys [error]} event]
+    (println error)
+    {:dispatch {:event/type ::stop-sync :source ::fetch-account-info}}))
+
+(defmethod event-handler ::fetch-account-info [event]
+  (let [{:keys [context]} event
+        access-token (fx/sub-ctx context queries/access-token)]
+    {:dispatch {:event/type ::start-sync :source ::fetch-account-info}
+     :fetch-account-info {:token access-token
+                          :dispatch-success ::set-account-info
+                          :dispatch-error ::set-account-info-error}}))
+
+
 ;; Search events
 
 (defmethod event-handler ::start-search [event]
@@ -206,6 +228,7 @@
                         :fetch-notes-info effects/fetch-notes-info
                         :fetch-book effects/fetch-book
                         :fetch-books effects/fetch-books
+                        :fetch-account-info effects/fetch-account-info
                         :search-in-book effects/search-in-book})))
 
 

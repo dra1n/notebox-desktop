@@ -2,6 +2,7 @@
   (:require [clojure.string :as string]
             [cheshire.core :as json]
             [luggage.client :as client]
+            [luggage.account :as account]
             [luggage.collections :as luggage]))
 
 (def collections-name "notes")
@@ -177,6 +178,30 @@
       (let [error (-> e (.getMessage) (json/parse-string))]
         (cond (access-token-error? error)
               (error-callback error))))))
+
+
+;; Account
+
+(defn fetch-account-info
+  [{:keys [token dispatch-success dispatch-error]} dispatch]
+  (future
+    (try
+      (-> (account/account-info token)
+          ((fn [data]
+             (dispatch {:event/type dispatch-success
+                        :data data}))))
+      (catch Exception e
+        ;; Exception message isn't always parsable
+        ;; For example download exception will look something like this
+        ;;   Exception in 2/files/download: {".tag":"path","path":"not_found"}
+        ;; In this case it seems that future is not resolved and we 
+        ;; silently swallow the exception. If this happens then try to
+        ;; log the messsage before parsing
+        (let [error (-> e (.getMessage) (json/parse-string))]
+          (cond (access-token-error? error)
+                (dispatch {:event/type dispatch-error
+                           :error error})
+                :else (println (.getMessage e))))))))
 
 ;; (comment defn add-note-new-book
 ;;          [{:keys [token callback error-callback book old-book note]}]
