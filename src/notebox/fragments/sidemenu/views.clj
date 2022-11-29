@@ -93,8 +93,7 @@
      :on-action {:event/type ::events/toggle-sidemenu-collapsed}}))
 
 (defn sidemenu [{:keys [fx/context]}]
-  (let [syncing? (fx/sub-ctx context queries/syncing?)
-        sidemenu-collapsed? (fx/sub-ctx context queries/sidemenu-collapsed?)]
+  (let [sidemenu-collapsed? (fx/sub-ctx context queries/sidemenu-collapsed?)]
     {:fx/type :v-box
      :style-class "sidemenu-wrapper"
      :children [{:fx/type (if sidemenu-collapsed?
@@ -104,8 +103,6 @@
                  :text "side menu"}
                 {:fx/type :v-box
                  :v-box/vgrow :always
-                 :children [{:fx/type :button
-                             :text (str "refresh" (if syncing? " [syncing]" ""))
-                             :on-action {:event/type ::events/fetch-notes-info}}]}
+                 :children []}
                 {:fx/type :v-box
                  :children [{:fx/type sidemenu-collapse-button}]}]}))
