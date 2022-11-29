@@ -1,6 +1,6 @@
 (ns luggage.client
   (:require [clojure.java.io :as io]
-            [clojure.string :as str])
+            [utils.core :as utils])
   (:import [com.dropbox.core
             DbxAppInfo
             DbxPKCEWebAuth
@@ -15,11 +15,6 @@
 (def app-key "yeo22moig39n8c0")
 (def config-path "~/.notebox")
 (def credentials-path (str config-path "/credentials"))
-
-(defn expand-home [s]
-  (if (.startsWith s "~")
-    (str/replace-first s "~" (System/getProperty "user.home"))
-    s))
 
 (def request-config (DbxRequestConfig. "notebox" "en_US"))
 
@@ -45,7 +40,7 @@
   (.finishFromCode pkce-web-auth code))
 
 (defn read-credential []
-  (let [^File input (File. (expand-home credentials-path))]
+  (let [^File input (File. (utils/expand-home credentials-path))]
     (. DbxCredential/Reader (readFromFile input))))
 
 (defn write-credential [^DbxAuthFinish auth-finish]
@@ -54,7 +49,7 @@
                                                   (.getRefreshToken auth-finish)
                                                   (.getKey app-info)
                                                   (.getSecret app-info))
-        ^File output (File. (expand-home credentials-path))]
+        ^File output (File. (utils/expand-home credentials-path))]
     (io/make-parents output)
     (.createNewFile output)
     (. DbxCredential/Writer (writeToFile credential output))))
@@ -68,7 +63,7 @@
                                                               (.getRefreshToken credential)
                                                               (.getKey app-info)
                                                               (.getSecret app-info))
-                ^File output (File. (expand-home credentials-path))]
+                ^File output (File. (utils/expand-home credentials-path))]
             (io/make-parents output)
             (.createNewFile output)
             (. DbxCredential/Writer (writeToFile new-credential output))))))
@@ -82,5 +77,5 @@
 (comment (.refresh credential request-config))
 (comment (refresh-credential))
 (comment (do
-           (io/make-parents (File. (expand-home "~/.noteboxx/rofl.txt")))
-           (spit (expand-home "~/.noteboxx/rofl.txt") "hey")))
+           (io/make-parents (File. (utils/expand-home "~/.noteboxx/rofl.txt")))
+           (spit (utils/expand-home "~/.noteboxx/rofl.txt") "hey")))
