@@ -167,6 +167,18 @@
   (fx/swap-context context assoc styles-db-key value))
 
 
+;; UI
+
+(def ui-db-key :notebox.ui)
+
+
+(defn sidemenu-collapsed? [context]
+  (fx/sub-val context get-in [ui-db-key :sidemenu-collapsed?]))
+
+(defn assoc-sidemenu-collapsed [context value]
+  (fx/swap-context context assoc-in [ui-db-key :sidemenu-collapsed?] value))
+
+
 ;; Auth
 
 (def auth-db-key :notebox.auth)

@@ -17,7 +17,8 @@
                  :text "Empty note"})))
 
 (defn all-notes [{:keys [fx/context]}]
-  (let [styles (fx/sub-ctx context queries/styles)]
+  (let [styles (fx/sub-ctx context queries/styles)
+        sidemenu-collapsed? (fx/sub-ctx context queries/sidemenu-collapsed?)]
     {:fx/type :scene
      :stylesheets ["styles.css"
                    (::css/url (:common styles))
@@ -28,7 +29,7 @@
      :root {:fx/type :h-box
             :children [{:fx/type :v-box
                         :style-class "sidemenu"
-                        :pref-width (::s/menu-width s/style)
+                        :pref-width (if sidemenu-collapsed? 40 (::s/menu-width s/style))
                         :children [{:fx/type sidemenu
                                     :v-box/vgrow :always}]}
                        {:fx/type :v-box

@@ -14,6 +14,10 @@
                      :-fx-border-style "hidden hidden solid hidden"
                      :-fx-border-width 1
                      :-fx-border-color (::s/bg-medium s/style)}
+    ".account-info-abbr" {:-fx-padding [(::s/spacer-sm s/style) (::s/spacer-sm s/style)]
+                          :-fx-border-style "hidden hidden solid hidden"
+                          :-fx-border-width 1
+                          :-fx-border-color (::s/bg-medium s/style)}
     ".account-name-label" {:-fx-text-fill (::s/text-grey-light s/style)
                            :-fx-font-weight "bold"
                            :-fx-font-size (::s/font-size-sm s/style)}

@@ -215,6 +215,14 @@
     {:context (fx/sub-ctx context queries/assoc-styles data)}))
 
 
+;; UI events
+
+(defmethod event-handler ::toggle-sidemenu-collapsed [event]
+  (let [{:keys [context]} event
+        sidemenu-collapsed? (fx/sub-ctx context queries/sidemenu-collapsed?)]
+    {:context (fx/sub-ctx context queries/assoc-sidemenu-collapsed (not sidemenu-collapsed?))}))
+
+
 ;; Main dispatch function
 
 (def dispatch-event

@@ -1,8 +1,20 @@
 (ns notebox.fragments.sidemenu.views
   (:require [cljfx.api :as fx]
+            [clojure.string :as str]
             [notebox.common.styles :as s]
             [notebox.app-db.events :as events]
             [notebox.app-db.queries :as queries]))
+
+;; Utils
+
+(defn abbriviate-name [acc]
+  (let [name-parts (-> acc :name (str/split #"\s"))]
+    (->> name-parts
+         (map first)
+         (str/join ""))))
+
+
+;; Views
 
 (defn shevron-left-icon [_]
   {:fx/type :v-box
@@ -60,11 +72,34 @@
                 {:fx/type account-email
                  :email (:email account-info)}]}))
 
+(defn account-info-view-abbr [{:keys [fx/context]}]
+  (let [account-info (fx/sub-ctx context queries/account-info)]
+    {:fx/type :v-box
+     :style-class "account-info-abbr"
+     :children [{:fx/type account-name
+                 :name (abbriviate-name account-info)}]}))
+
+(defn sidemenu-collapse-button [{:keys [fx/context]}]
+  (let [sidemenu-collapsed? (fx/sub-ctx context queries/sidemenu-collapsed?)]
+    {:fx/type :button
+     :pref-width (::s/menu-width s/style)
+     :style-class "sidemenu-toggle-button"
+     :graphic {:fx/type (if sidemenu-collapsed?
+                          shevron-right-icon
+                          shevron-left-icon)}
+     :text (if sidemenu-collapsed?
+             " "
+             "Collapse sidebar")
+     :on-action {:event/type ::events/toggle-sidemenu-collapsed}}))
+
 (defn sidemenu [{:keys [fx/context]}]
-  (let [syncing? (fx/sub-ctx context queries/syncing?)]
+  (let [syncing? (fx/sub-ctx context queries/syncing?)
+        sidemenu-collapsed? (fx/sub-ctx context queries/sidemenu-collapsed?)]
     {:fx/type :v-box
      :style-class "sidemenu-wrapper"
-     :children [{:fx/type account-info-view}
+     :children [{:fx/type (if sidemenu-collapsed?
+                            account-info-view-abbr
+                            account-info-view)}
                 {:fx/type :label
                  :text "side menu"}
                 {:fx/type :v-box
@@ -73,9 +108,4 @@
                              :text (str "refresh" (if syncing? " [syncing]" ""))
                              :on-action {:event/type ::events/fetch-notes-info}}]}
                 {:fx/type :v-box
-                 :children [{:fx/type :button
-                             :pref-width (::s/menu-width s/style)
-                             :style-class "sidemenu-toggle-button"
-                             :graphic {:fx/type shevron-left-icon}
-                             :text "Collapse sidebar"
-                             :on-action {:event/type ::events/fetch-notes-info}}]}]}))
+                 :children [{:fx/type sidemenu-collapse-button}]}]}))
