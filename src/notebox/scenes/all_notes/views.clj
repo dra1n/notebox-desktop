@@ -1,11 +1,31 @@
 (ns notebox.scenes.all-notes.views
-  (:require [cljfx.api :as fx]
-            [cljfx.css :as css]
-            [notebox.app-db.queries :as queries]
-            [notebox.fragments.sidemenu.views :refer [sidemenu]]
-            [notebox.fragments.notes-list.views :refer [notes-list]]
-            [notebox.fragments.note.views :refer [note]]
-            [notebox.common.styles :as s]))
+  (:require  [clojure.java.io :as io]
+             [cljfx.api :as fx]
+             [cljfx.css :as css]
+             [notebox.app-db.queries :as queries]
+             [notebox.fragments.sidemenu.views :refer [sidemenu]]
+             [notebox.fragments.notes-list.views :refer [notes-list]]
+             [notebox.fragments.note.views :refer [note]]
+             [notebox.common.styles :as s]))
+
+(defn empty-note-view [_]
+  {:fx/type :v-box
+   :alignment :center
+   :children [{:fx/type :h-box
+               :alignment :center
+               :pref-width 440
+               :children [{:fx/type :image-view
+                           :image {:url (.toString (io/resource "images/empty-note.svg"))}}
+                          {:fx/type :v-box
+                           :style-class "empty-note-description"
+                           :children [{:fx/type :label
+                                       :style-class "empty-note-title"
+                                       :text "Select a note"}
+                                      {:fx/type :label
+                                       :style-class "empty-note-disclaimer"
+                                       :max-width 300
+                                       :wrap-text true
+                                       :text "Choose a note to display it or just add new one if you don't have any yet."}]}]}]})
 
 (defn subscene-view [{:keys [fx/context]}]
   (let [subscene (fx/sub-ctx context queries/subscene)
@@ -13,8 +33,7 @@
     (cond (= subscene :show-note) {:fx/type note
                                    :note (:note subscene-data)
                                    :book (:book subscene-data)}
-          :else {:fx/type :label
-                 :text "Empty note"})))
+          :else {:fx/type empty-note-view})))
 
 (defn all-notes [{:keys [fx/context]}]
   (let [styles (fx/sub-ctx context queries/styles)

@@ -101,8 +101,6 @@
      :children [{:fx/type (if sidemenu-collapsed?
                             account-info-view-abbr
                             account-info-view)}
-                {:fx/type :label
-                 :text "side menu"}
                 {:fx/type :v-box
                  :v-box/vgrow :always
                  :children []}
