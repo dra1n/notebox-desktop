@@ -8,10 +8,12 @@
 ;; Utils
 
 (defn abbriviate-name [acc]
-  (let [name-parts (-> acc :name (str/split #"\s"))]
-    (->> name-parts
-         (map first)
-         (str/join ""))))
+  (let [name-parts (-> acc :name (str/split #"\s"))
+        name (->> name-parts
+                  (map first)
+                  (take 2)
+                  (str/join ""))]
+    (if (empty? name) "--" name)))
 
 
 ;; Views
