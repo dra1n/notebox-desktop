@@ -13,13 +13,12 @@
 
 ;; Handlers
 
-(defn book-click-handler [{:keys [book notes visible-books]}]
+(defn book-click-handler [{:keys [book visible-books]}]
   (if (contains? visible-books book)
     (dispatch-event {:event/type ::events/remove-visible-book :data book})
     (do (dispatch-event {:event/type ::events/set-visible-book :data book})
         (dispatch-event {:event/type ::events/set-last-active-book :data book})
-        (cond (not (contains? notes book))
-              (dispatch-event {:event/type ::events/fetch-book :data book})))))
+        (dispatch-event {:event/type ::events/fetch-book :data book}))))
 
 (defn note-click-handler [{:keys [note book]}]
   (dispatch-event {:event/type ::events/set-subscene
@@ -126,8 +125,7 @@
                  :on-mouse-exited {:event/type ::events/set-hovered-book :data nil}
                  :on-mouse-clicked (fn [_]
                                      (book-click-handler {:book (:slug book)
-                                                          :visible-books visible-books
-                                                          :notes notes}))
+                                                          :visible-books visible-books}))
                  :children [{:fx/type :h-box
                              :children [{:fx/type book-icon
                                          :book (:slug book)}
