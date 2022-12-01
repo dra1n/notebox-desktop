@@ -5,9 +5,7 @@
 (def style
   (css/register
    ::style
-   {"*" {:-fx-font-family (::s/font-family-base s/style)}
-
-    ".sidemenu" {:-fx-background-color (::s/bg-dark s/style)}
+   {".sidemenu" {:-fx-background-color (::s/bg-dark s/style)}
 
     ".notelist" {:-fx-font-size (::s/font-size-sm s/style)
                  :-fx-background-color (::s/bg-lighter s/style)

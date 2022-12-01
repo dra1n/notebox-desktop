@@ -28,9 +28,6 @@
     ::bg-orange-bright "#FF6D26"
     ::white "#fff"
 
-    ;;font-family
-    ::font-family-base "Roboto"
-
     ;; font-size
     ::font-size-xs "12px"
     ::font-size-sm "14px"
