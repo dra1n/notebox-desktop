@@ -5,7 +5,8 @@
 (def style
   (css/register
    ::style
-   {".auth-container" {:-fx-background-color (::s/white s/style)
+   {"*" {:-fx-font-family "serif"}
+    ".auth-container" {:-fx-background-color (::s/white s/style)
                        :-fx-padding (::s/spacer-xxl s/style)}
     ".auth-title" {:-fx-font-size (::s/font-size-lg s/style)
                    :-fx-padding [0 0 (::s/spacer-md s/style)]}
