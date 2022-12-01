@@ -29,4 +29,5 @@
                                                  :cycle-count :indefinite
                                                  :auto-reverse false
                                                  :interpolator :linear}
-                                    :desc {:fx/type loader}}]}]}}))
+                                    :desc {:fx/type loader
+                                           :requested-width 50}}]}]}}))
