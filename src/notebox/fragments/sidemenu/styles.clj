@@ -14,7 +14,7 @@
                      :-fx-border-style "hidden hidden solid hidden"
                      :-fx-border-width 1
                      :-fx-border-color (::s/bg-medium s/style)}
-    ".account-info-abbr" {:-fx-padding [(::s/spacer-sm s/style) (::s/spacer-sm s/style)]
+    ".account-info-abbr" {:-fx-padding [(::s/spacer-sm s/style) (::s/spacer-xxs s/style)]
                           :-fx-border-style "hidden hidden solid hidden"
                           :-fx-border-width 1
                           :-fx-border-color (::s/bg-medium s/style)}

@@ -76,7 +76,8 @@
 
 (defn account-info-view-abbr [{:keys [fx/context]}]
   (let [account-info (fx/sub-ctx context queries/account-info)]
-    {:fx/type :v-box
+    {:fx/type :h-box
+     :alignment :center
      :style-class "account-info-abbr"
      :children [{:fx/type account-name
                  :name (abbriviate-name account-info)}]}))
