@@ -5,7 +5,6 @@
 (def style
   (css/register
    ::style
-   {"*" {:-fx-font-family "sans-serif"}
-    ".login" {:-fx-alignment :center
+   {".login" {:-fx-alignment :center
               :-fx-background-color (::s/bg-lighter s/style)}
     ".login-logo" {:-fx-padding [-60 0 (::s/spacer-lg s/style) 0]}}))
