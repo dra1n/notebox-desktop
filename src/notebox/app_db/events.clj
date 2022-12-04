@@ -39,7 +39,8 @@
   (let [{:keys [context]} event
         auth-code (fx/sub-ctx context queries/auth-code)]
     (cond (not (str/blank? auth-code))
-          {:apply-auth-code {:auth-code auth-code
+          {:dispatch {:event/type ::set-scene :data :splash}
+           :apply-auth-code {:auth-code auth-code
                              :auth-finished ::set-auth-finished}})))
 
 
