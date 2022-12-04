@@ -7,6 +7,7 @@
              [notebox.fragments.sidemenu.views :refer [sidemenu]]
              [notebox.fragments.notes-list.views :refer [notes-list]]
              [notebox.fragments.note.views :refer [note]]
+             [notebox.common.http-link.views :refer [http-link]]
              [notebox.common.styles :as s]))
 
 (defn empty-note-view [_]
@@ -22,11 +23,20 @@
                            :children [{:fx/type :label
                                        :style-class "empty-note-title"
                                        :text "Select a note"}
-                                      {:fx/type :label
-                                       :style-class "empty-note-disclaimer"
+                                      {:fx/type :flow-pane
                                        :max-width 300
-                                       :wrap-text true
-                                       :text "Choose a note to display it or just add new one if you don't have any yet."}]}]}]})
+                                       :children [{:fx/type :label
+                                                   :style-class "empty-note-disclaimer"
+                                                   :wrap-text true
+                                                   :text "Choose a note to display it or just add"}
+                                                  {:fx/type http-link
+                                                   :style-class "empty-note-add-link"
+                                                   :text "new one"
+                                                   :url "https://notebox.in/app"}
+                                                  {:fx/type :label
+                                                   :style-class "empty-note-disclaimer"
+                                                   :wrap-text true
+                                                   :text "if you don't have any yet."}]}]}]}]})
 
 (defn subscene-view [{:keys [fx/context]}]
   (let [subscene (fx/sub-ctx context queries/subscene)

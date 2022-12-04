@@ -1,23 +1,16 @@
 (ns notebox.fragments.auth.views
   (:require [cljfx.api :as fx]
             [clojure.string :as str]
+            [notebox.common.http-link.views :refer [http-link]]
             [notebox.app-db.queries :as queries]
-            [notebox.app-db.events :as events :refer [dispatch-event]])
-  (:import [java.awt Desktop]
-           [java.net URI]))
+            [notebox.app-db.events :as events :refer [dispatch-event]]))
 
 (defn auth-link [{:keys [fx/context]}]
   (let [authorize-url (fx/sub-ctx context queries/authorize-url)]
-    {:fx/type :hyperlink
+    {:fx/type http-link
      :style-class "auth-link"
      :text "Sign in with Dropbox"
-     :on-action (fn [_]
-                  (future
-                    (try
-                      (.browse (Desktop/getDesktop)
-                               (URI. authorize-url))
-                      (catch Exception e
-                        (.printStackTrace e)))))}))
+     :url authorize-url}))
 
 (defn auth [_]
   {:fx/type :v-box
