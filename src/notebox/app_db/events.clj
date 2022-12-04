@@ -5,7 +5,8 @@
             [clojure.pprint]
             [notebox.app-db.db :refer [*state event-handler]]
             [notebox.app-db.queries :as queries]
-            [notebox.app-db.effects :as effects]))
+            [notebox.app-db.effects :as effects])
+  (:import [javafx.scene.control DialogEvent Dialog ButtonBar$ButtonData ButtonType]))
 
 
 (defmethod event-handler ::initialize [_]
@@ -21,14 +22,18 @@
 
 (defmethod event-handler ::set-auth-finished [event]
   (let [{:keys [access-token context]} event]
-    {:context (fx/sub-ctx context queries/assoc-access-token access-token)
+    {:context (-> context
+                  (fx/sub-ctx queries/assoc-access-token access-token)
+                  (fx/sub-ctx queries/assoc-pkce-web-auth nil))
      :dispatch-n [{:event/type ::set-scene :data :all-notes}
                   {:event/type ::fetch-notes-info}
                   {:event/type ::fetch-account-info}]}))
 
 (defmethod event-handler ::switch-to-login-pane [event]
-  (let [{:keys [authorize-url context]} event]
-    {:context (fx/sub-ctx context queries/assoc-authorize-url authorize-url)
+  (let [{:keys [authorize-url pkce-web-auth context]} event]
+    {:context (-> context
+                  (fx/sub-ctx queries/assoc-authorize-url authorize-url)
+                  (fx/sub-ctx queries/assoc-pkce-web-auth pkce-web-auth))
      :dispatch {:event/type ::set-scene :data :login}}))
 
 (defmethod event-handler ::set-auth-code [event]
@@ -37,11 +42,21 @@
 
 (defmethod event-handler ::apply-auth-code [event]
   (let [{:keys [context]} event
-        auth-code (fx/sub-ctx context queries/auth-code)]
+        auth-code (fx/sub-ctx context queries/auth-code)
+        pkce-web-auth (fx/sub-ctx context queries/pkce-web-auth)]
     (cond (not (str/blank? auth-code))
           {:dispatch {:event/type ::set-scene :data :splash}
            :apply-auth-code {:auth-code auth-code
+                             :pkce-web-auth pkce-web-auth
                              :auth-finished ::set-auth-finished}})))
+
+(defmethod event-handler ::logout [event]
+  (let [{:keys [context]} event]
+    {:context (-> context
+                  (fx/sub-ctx queries/reset-auth)
+                  (fx/sub-ctx queries/reset-notes)
+                  (fx/sub-ctx queries/reset-account))
+     :logout {:logout-finished ::initialize}}))
 
 
 ;; Notes events
@@ -223,6 +238,20 @@
         sidemenu-collapsed? (fx/sub-ctx context queries/sidemenu-collapsed?)]
     {:context (fx/sub-ctx context queries/assoc-sidemenu-collapsed (not sidemenu-collapsed?))}))
 
+(defmethod event-handler ::show-confirmation
+  [{:keys [context confirmation-id]}]
+  {:context (fx/sub-ctx context queries/assoc-show-confirmation confirmation-id true)})
+
+(defmethod event-handler ::on-confirmation-dialog-hidden
+  [{:keys [context ^DialogEvent fx/event confirmation-id on-confirmed]}]
+  (condp = (.getButtonData ^ButtonType (.getResult ^Dialog (.getSource event)))
+    ButtonBar$ButtonData/CANCEL_CLOSE
+    {:context (fx/sub-ctx context queries/assoc-show-confirmation confirmation-id false)}
+
+    ButtonBar$ButtonData/OK_DONE
+    {:context (fx/sub-ctx context queries/assoc-show-confirmation confirmation-id false)
+     :dispatch on-confirmed}))
+
 
 ;; Main dispatch function
 
@@ -234,6 +263,7 @@
                         :dispatch-n effects/dispatch-n
                         :start-auth-flow effects/start-auth-flow
                         :apply-auth-code effects/apply-auth-code
+                        :logout effects/logout
                         :fetch-notes-info effects/fetch-notes-info
                         :fetch-book effects/fetch-book
                         :fetch-books effects/fetch-books

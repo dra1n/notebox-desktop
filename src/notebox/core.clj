@@ -1,8 +1,9 @@
 (ns notebox.core
   (:gen-class)
-  (:require [cljfx.api :as fx]
+  (:require [settings]
+            [cljfx.api :as fx]
             [utils.core :refer [expand-home]]
-            [notebox.app-db.db :refer [*state state-path]]
+            [notebox.app-db.db :refer [*state]]
             [notebox.app-db.events :as events :refer [dispatch-event]]
             [notebox.app-db.queries :as queries]
             [notebox.scenes.core :as scenes])
@@ -16,8 +17,10 @@
   {:fx/type :stage
    :on-close-request (fn [_]
                        (let [state (fx/sub-val @*state identity)]
-                         (spit (expand-home state-path) (pr-str state))
-                         (System/exit 0)))
+                         (try (spit (expand-home settings/state-path) (pr-str state))
+                              (catch Exception e
+                                (println e))))
+                       (System/exit 0))
    :showing true
    :width 1024
    :height 600

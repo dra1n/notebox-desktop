@@ -1,6 +1,9 @@
 (ns notebox.app-db.effects
-  (:require [clojure.string :as string]
+  (:require [settings]
+            [clojure.java.io :as io]
+            [clojure.string :as string]
             [cheshire.core :as json]
+            [utils.core :refer [expand-home]]
             [luggage.client :as client]
             [luggage.account :as account]
             [luggage.collections :as luggage]))
@@ -26,20 +29,35 @@
                       :access-token (.getAccessToken credential)}))
          (catch Exception e
            (println e)
-           (dispatch {:event/type auth-login-required
-                      :authorize-url (client/create-authorize-url)})))))
+           (let [pkce-web-auth (client/create-pkce-web-auth)]
+             (dispatch {:event/type auth-login-required
+                        :authorize-url (client/create-authorize-url pkce-web-auth)
+                        :pkce-web-auth pkce-web-auth}))))))
 
 (defn apply-auth-code
-  [{:keys [auth-code auth-finished]} dispatch]
+  [{:keys [auth-code pkce-web-auth auth-finished]} dispatch]
   (future
-    (try (-> auth-code
-             (client/finish-authorize-flow)
+    (try (-> pkce-web-auth
+             (client/finish-authorize-flow auth-code)
              (client/write-credential))
          (let [credential (client/read-credential)]
            (dispatch {:event/type auth-finished
                       :access-token (.getAccessToken credential)}))
          (catch Exception e
            (println e)))))
+
+(defn logout
+  [{:keys [logout-finished]} dispatch]
+  (let [config-path-file (-> settings/config-path
+                             (expand-home)
+                             (io/file)
+                             (file-seq)
+                             (reverse))]
+    (future
+      (try (run! io/delete-file config-path-file)
+           (catch Exception e
+             (println e))
+           (finally (dispatch {:event/type logout-finished}))))))
 
 
 ;; Notes Utils

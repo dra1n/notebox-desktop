@@ -10,6 +10,10 @@
                                :-fx-text-fill (::s/text-grey-light s/style)
                                :-fx-pref-height 40
                                :-fx-padding [0 (::s/spacer-sm s/style)]}
+    ".sidemenu-menuitem" {:-fx-text-fill (::s/text-grey-light s/style)
+                          :-fx-pref-height 40
+                          :-fx-padding [(::s/spacer-sm s/style) (::s/spacer-lg s/style)]}
+    ".sidemenu-menuitem:hover" {:-fx-background-color (::s/bg-medium s/style)}
     ".account-info" {:-fx-padding [(::s/spacer-md s/style) (::s/spacer-lg s/style)]
                      :-fx-border-style "hidden hidden solid hidden"
                      :-fx-border-width 1

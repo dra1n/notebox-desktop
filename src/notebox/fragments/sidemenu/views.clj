@@ -1,6 +1,7 @@
 (ns notebox.fragments.sidemenu.views
   (:require [cljfx.api :as fx]
             [clojure.string :as str]
+            [notebox.common.buttons.views :refer [button-with-confirmation-dialog]]
             [notebox.common.styles :as s]
             [notebox.app-db.events :as events]
             [notebox.app-db.queries :as queries]))
@@ -82,6 +83,15 @@
      :children [{:fx/type account-name
                  :name (abbriviate-name account-info)}]}))
 
+(defn sidemenu-logout-button [_]
+  {:fx/type button-with-confirmation-dialog
+   :confirmation-id ::logout-button
+   :button {:style-class "sidemenu-menuitem"
+            :pref-width (::s/menu-width s/style)
+            :text "Logout"}
+   :dialog-pane {:content-text "Are you sure?"}
+   :on-confirmed {:event/type ::events/logout}})
+
 (defn sidemenu-collapse-button [{:keys [fx/context]}]
   (let [sidemenu-collapsed? (fx/sub-ctx context queries/sidemenu-collapsed?)]
     {:fx/type :button
@@ -104,6 +114,6 @@
                             account-info-view)}
                 {:fx/type :v-box
                  :v-box/vgrow :always
-                 :children []}
+                 :children [{:fx/type sidemenu-logout-button}]}
                 {:fx/type :v-box
                  :children [{:fx/type sidemenu-collapse-button}]}]}))

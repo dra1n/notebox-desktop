@@ -82,6 +82,9 @@
 (defn assoc-last-active-note [context value]
   (fx/swap-context context assoc-in [notes-db-key :last-active-note] value))
 
+(defn reset-notes [context]
+  (fx/swap-context context assoc notes-db-key nil))
+
 
 ;; Search
 
@@ -125,8 +128,10 @@
   (fx/sub-val context get-in [account-db-key :account-info]))
 
 (defn assoc-account-info [context value]
-  (-> context
-      (fx/swap-context assoc-in [account-db-key :account-info] value)))
+  (fx/swap-context context assoc-in [account-db-key :account-info] value))
+
+(defn reset-account [context]
+  (fx/swap-context context assoc account-db-key nil))
 
 
 ;; Subscenes
@@ -178,6 +183,12 @@
 (defn assoc-sidemenu-collapsed [context value]
   (fx/swap-context context assoc-in [ui-db-key :sidemenu-collapsed?] value))
 
+(defn show-confirmation? [context confirmation-id]
+  (fx/sub-val context get-in [ui-db-key :confirmation confirmation-id :showing?] false))
+
+(defn assoc-show-confirmation [context confirmation-id value]
+  (fx/swap-context context assoc-in [ui-db-key :confirmation confirmation-id :showing?] value))
+
 
 ;; Auth
 
@@ -200,3 +211,12 @@
 
 (defn assoc-authorize-url [context value]
   (fx/swap-context context assoc-in [auth-db-key :authorize-url] value))
+
+(defn pkce-web-auth [context]
+  (fx/sub-val context get-in [auth-db-key :pkce-web-auth]))
+
+(defn assoc-pkce-web-auth [context value]
+  (fx/swap-context context assoc-in [auth-db-key :pkce-web-auth] value))
+
+(defn reset-auth [context]
+  (fx/swap-context context assoc auth-db-key nil))

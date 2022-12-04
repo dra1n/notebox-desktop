@@ -1,6 +1,7 @@
 (ns luggage.client
   (:require [clojure.java.io :as io]
-            [utils.core :as utils])
+            [utils.core :as utils]
+            [settings])
   (:import [com.dropbox.core
             DbxAppInfo
             DbxPKCEWebAuth
@@ -12,10 +13,6 @@
            [com.dropbox.core.v2 DbxClientV2]
            [java.io File]))
 
-(def app-key "yeo22moig39n8c0")
-(def config-path "~/.notebox")
-(def credentials-path (str config-path "/credentials"))
-
 (def request-config (DbxRequestConfig. "notebox" "en_US"))
 
 (defn dropbox-client [access-token]
@@ -23,11 +20,12 @@
 
 (def client (memoize dropbox-client))
 
-(def app-info (DbxAppInfo. app-key))
+(def app-info (DbxAppInfo. settings/app-key))
 
-(def pkce-web-auth (DbxPKCEWebAuth. request-config app-info))
+(defn create-pkce-web-auth []
+  (DbxPKCEWebAuth. request-config app-info))
 
-(defn create-authorize-url []
+(defn create-authorize-url [pkce-web-auth]
   (let [web-auth-request
         ^DbxWebAuth.Request
         (-> (DbxWebAuth/newRequestBuilder)
@@ -36,11 +34,11 @@
             (.build))]
     (.authorize pkce-web-auth web-auth-request)))
 
-(defn finish-authorize-flow [code]
+(defn finish-authorize-flow [pkce-web-auth code]
   (.finishFromCode pkce-web-auth code))
 
 (defn read-credential []
-  (let [^File input (File. (utils/expand-home credentials-path))]
+  (let [^File input (File. (utils/expand-home settings/credentials-path))]
     (. DbxCredential/Reader (readFromFile input))))
 
 (defn write-credential [^DbxAuthFinish auth-finish]
@@ -49,7 +47,7 @@
                                                   (.getRefreshToken auth-finish)
                                                   (.getKey app-info)
                                                   (.getSecret app-info))
-        ^File output (File. (utils/expand-home credentials-path))]
+        ^File output (File. (utils/expand-home settings/credentials-path))]
     (io/make-parents output)
     (.createNewFile output)
     (. DbxCredential/Writer (writeToFile credential output))))
@@ -63,7 +61,7 @@
                                                               (.getRefreshToken credential)
                                                               (.getKey app-info)
                                                               (.getSecret app-info))
-                ^File output (File. (utils/expand-home credentials-path))]
+                ^File output (File. (utils/expand-home settings/credentials-path))]
             (io/make-parents output)
             (.createNewFile output)
             (. DbxCredential/Writer (writeToFile new-credential output))))))
