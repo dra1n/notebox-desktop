@@ -118,10 +118,9 @@
           ((fn [data] (dispatch {:event/type dispatch-success
                                  :data data}))))
       (catch Exception e
-        (let [error (-> e (.getMessage) (json/parse-string))]
-          (cond (access-token-error? error)
-                (dispatch {:event/type dispatch-error
-                           :error error})))))))
+        (let [error (-> e (.getMessage))]
+          (dispatch {:event/type dispatch-error
+                     :error error}))))))
 
 (defn fetch-tags-info
   [{:keys [token dispatch-success dispatch-error]} dispatch]
@@ -154,14 +153,11 @@
         ;; Exception message isn't always parsable
         ;; For example download exception will look something like this
         ;;   Exception in 2/files/download: {".tag":"path","path":"not_found"}
-        ;; In this case it seems that future is not resolved and we 
-        ;; silently swallow the exception. If this happens then try to
-        ;; log the messsage before parsing
+        (println (.getMessage e))
         (let [error (-> e (.getMessage) (json/parse-string))]
           (cond (access-token-error? error)
                 (dispatch {:event/type dispatch-error
-                           :error error})
-                :else (println (.getMessage e))))))))
+                           :error error})))))))
 
 (defn fetch-books
   [{:keys [token dispatch-success dispatch-error books]} dispatch]
