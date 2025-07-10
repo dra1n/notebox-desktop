@@ -7,11 +7,7 @@
             [notebox.app-db.events :as events :refer [dispatch-event]]
             [notebox.app-db.queries :as queries]
             [notebox.scenes.core :as scenes])
-  (:import [javafx.application Platform]
-           [de.codecentric.centerdevice.javafxsvg SvgImageLoaderFactory]
-           [de.codecentric.centerdevice.javafxsvg.dimension PrimitiveDimensionProvider]))
-
-(SvgImageLoaderFactory/install (PrimitiveDimensionProvider.))
+  (:import [javafx.application Platform]))
 
 (defn root [{:keys [fx/context]}]
   {:fx/type :stage
