@@ -10,11 +10,11 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: '17'
-      - uses: DeLaGuardo/setup-clojure@1.0
+      - uses: DeLaGuardo/setup-clojure@13.4
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
         with:
-          tools-deps: '1.10.1.507'
+          cli: 1.10.1.693
       - run: clojure -X:uberjar
       - run: jpackage @jpackage/common @jpackage/linux
       - uses: actions/upload-release-asset@v1
@@ -32,11 +32,11 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: '17'
-      - uses: DeLaGuardo/setup-clojure@1.0
+      - uses: DeLaGuardo/setup-clojure@13.4
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
         with:
-          tools-deps: '1.10.1.507'
+          cli: 1.10.1.693
       - run: clojure -X:uberjar
       - run: jpackage @jpackage/common @jpackage/mac
       - uses: actions/upload-release-asset@v1
@@ -54,11 +54,11 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: '17'
-      - uses: DeLaGuardo/setup-clojure@1.0
+      - uses: DeLaGuardo/setup-clojure@13.4
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
         with:
-          tools-deps: '1.10.1.507'
+          cli: 1.10.1.693
       - run: clojure -X:uberjar
       - run: jpackage @jpackage/common @jpackage/mac_aarch64
       - uses: actions/upload-release-asset@v1
