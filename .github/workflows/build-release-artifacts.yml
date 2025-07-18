@@ -22,8 +22,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: Notebox_1.0-1_amd64.deb
-          asset_name: Notebox_1.0-1_amd64.deb
+          asset_path: notebox_1.0-1_amd64.deb
+          asset_name: notebox_1.0-1_amd64.deb
           asset_content_type: application/vnd.debian.binary-package
   build-dmg:
     runs-on: macos-latest
