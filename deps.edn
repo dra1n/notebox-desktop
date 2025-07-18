@@ -10,8 +10,9 @@
         com.jsyn/jsyn {:mvn/version "20170815"}}
  :aliases {:dev {} ;; Calva can be stupid, for some reason requires thiss alias
            :project/run {:main-opts ["-m" "notebox.core" "-Djavafx.macosx.embedded" "true"]}
-           :uberjar {:extra-deps {seancorfield/depstar {:mvn/version "0.5.2"}}
-                     :main-opts ["-m" "hf.depstar.uberjar" "dist/notebox.jar"]}
+           :uberjar {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.1.303"}}
+                     :exec-fn hf.depstar/uberjar
+                     :exec-args {:jar "dist/Notebox.jar"}}
            ;; Simple nREPL server with no additional libraries, headless
            :repl/nrepl
            {:extra-deps {nrepl/nrepl                {:mvn/version "0.9.0"}}
