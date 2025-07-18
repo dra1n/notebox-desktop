@@ -68,8 +68,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: Notebox-1.0.dmg
-          asset_name: Notebox-1.0.dmg
+          asset_path: Notebox_arch64-1.0.dmg
+          asset_name: Notebox_arch64-1.0.dmg
           asset_content_type: application/x-apple-diskimage
   build-exe:
     runs-on: windows-latest
