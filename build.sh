@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OS=${1:?"Please provide OS type (windows/linux/mac)"}
+OS=${1:?"Please provide OS type (windows/linux/mac/mac_aarch64)"}
 
 echo "Starting build..."
 
@@ -12,5 +12,5 @@ else
     J_ARG="@jpackage/mac"
 fi
 
-clj -A:uberjar
+clj -X:uberjar
 jpackage @jpackage/common $J_ARG
