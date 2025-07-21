@@ -34,7 +34,7 @@ An application for taking notes.
 Requirements:
 
 * [clojure](https://clojure.org/guides/getting_started)
-* Java JDK 14
+* Java JDK 17
 
 ```bash
 git clone https://github.com/dra1n/notebox-desktop.git
