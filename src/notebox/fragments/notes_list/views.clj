@@ -158,10 +158,14 @@
   (let [notes (fx/sub-ctx context queries/search-results)
         books (fx/sub-ctx context queries/notes-info)
         active-note (fx/sub-ctx context queries/last-active-note)]
-    {:fx/type search-notes
-     :active-note active-note
-     :notes notes
-     :books books}))
+    {:fx/type :scroll-pane
+     :style-class "scroll-pane"
+     :fit-to-width true
+     :fit-to-height true
+     :content {:fx/type search-notes
+               :active-note active-note
+               :notes notes
+               :books books}}))
 
 (defn search-reset-button [{:keys [fx/context]}]
   (let [search-started? (fx/sub-ctx context queries/search-started?)]
