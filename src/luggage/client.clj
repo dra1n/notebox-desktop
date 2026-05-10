@@ -37,9 +37,13 @@
 (defn finish-authorize-flow [pkce-web-auth code]
   (.finishFromCode pkce-web-auth code))
 
-(defn read-credential []
+(defn read-credential
+  "Returns a DbxCredential from disk, or nil if the file is missing.
+  Other failures (unreadable path, corrupt contents) still throw from the SDK."
+  []
   (let [^File input (File. (utils/expand-home settings/credentials-path))]
-    (. DbxCredential/Reader (readFromFile input))))
+    (when (and (.exists input) (.isFile input))
+      (. DbxCredential/Reader (readFromFile input)))))
 
 (defn write-credential [^DbxAuthFinish auth-finish]
   (let [^DbxCredential credential (DbxCredential. (.getAccessToken auth-finish)
@@ -53,7 +57,7 @@
     (. DbxCredential/Writer (writeToFile credential output))))
 
 (defn refresh-credential []
-  (let [^DbxCredential credential (read-credential)]
+  (when-let [^DbxCredential credential (read-credential)]
     (cond (.aboutToExpire credential)
           (let [^DbxRefreshResult refresh-result (.refresh credential request-config)
                 ^DbxCredential new-credential (DbxCredential. (.getAccessToken refresh-result)

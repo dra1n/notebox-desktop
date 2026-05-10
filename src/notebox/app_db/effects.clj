@@ -20,19 +20,24 @@
 
 ;; Auth Flow
 
+(defn require-login!
+  [{:keys [auth-login-required]} dispatch]
+  (let [pkce-web-auth (client/create-pkce-web-auth)]
+    (dispatch {:event/type auth-login-required
+               :authorize-url (client/create-authorize-url pkce-web-auth)
+               :pkce-web-auth pkce-web-auth})))
+
 (defn start-auth-flow
-  [{:keys [auth-finished auth-login-required]} dispatch]
+  [{:keys [auth-finished] :as opts} dispatch]
   (future
     (try (client/refresh-credential)
-         (let [credential (client/read-credential)]
+         (if-let [credential (client/read-credential)]
            (dispatch {:event/type auth-finished
-                      :access-token (.getAccessToken credential)}))
+                      :access-token (.getAccessToken credential)})
+           (require-login! opts dispatch))
          (catch Exception e
            (println e)
-           (let [pkce-web-auth (client/create-pkce-web-auth)]
-             (dispatch {:event/type auth-login-required
-                        :authorize-url (client/create-authorize-url pkce-web-auth)
-                        :pkce-web-auth pkce-web-auth}))))))
+           (require-login! opts dispatch)))))
 
 (defn apply-auth-code
   [{:keys [auth-code pkce-web-auth auth-finished]} dispatch]
@@ -40,9 +45,10 @@
     (try (-> pkce-web-auth
              (client/finish-authorize-flow auth-code)
              (client/write-credential))
-         (let [credential (client/read-credential)]
+         (if-let [credential (client/read-credential)]
            (dispatch {:event/type auth-finished
-                      :access-token (.getAccessToken credential)}))
+                      :access-token (.getAccessToken credential)})
+           (println "Notebox: credentials missing after auth; try signing in again."))
          (catch Exception e
            (println e)))))
 
